@@ -1,9 +1,11 @@
 #pragma once
 
 enum class GoalColor {
-	RED = 0,
-	GREEN = 1,
-	BLUE = 2,
-	YELLOW = 3,
-	MIX = 4
+	INVALID_MIN = 0,
+	RED = 1,
+	GREEN = 2,
+	BLUE = 3,
+	YELLOW = 4,
+	MIX = 5,
+	INVALID_MAX = 6
 };

@@ -1,8 +1,10 @@
 #pragma once
 
 enum class RelativeWallLocation {
-	RIGHT_OF = 1,
-	BELOW_OF = 2,
-	ABOVE_OF = 0,
-	LEFT_OF = 3
+	INVALID_MIN = 0,
+	ABOVE_OF = 1,
+	RIGHT_OF = 2,
+	BELOW_OF = 3,
+	LEFT_OF = 4,
+	INVALID_MAX = 5
 };

@@ -7,8 +7,27 @@ include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/3rdparty/json")
 
-add_library(ricochet src/Map.h src/MapTile.h src/OccupationData.h src/ReachabilityAnalysis.h src/Robot.h src/TileOccupation.h)
+set(ricochet_files
+	src/Defines.h
+	src/GoalColor.h
+	src/GoalType.h
+	src/Map.h 
+	src/MapBuilder.h 
+	src/MapBuilder.cpp
+	src/MapTile.h 
+	src/ObstacleType.h
+	src/OccupationData.h 
+	src/OccupationData.cpp 
+	src/Position.h
+	src/ReachabilityAnalysis.h 
+	src/RelativeWallLocation.h
+	src/Robot.h 
+	src/TileOccupation.h
+)
+
+add_library(ricochet ${ricochet_files})
 SET_TARGET_PROPERTIES(ricochet PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(rrobot src/RicochetRobots.cpp)
 add_dependencies(rrobot ricochet)
+target_link_libraries(rrobot ricochet)
