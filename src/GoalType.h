@@ -6,5 +6,6 @@ enum class GoalType {
 	ROUND_ECLIPSE = 2,
 	HEXAGON_COMPASS = 3,
 	TRIANGLE_COG = 4,
-	INVALID_MAX = 5
+	SWIRLY_SWIRL = 5,
+	INVALID_MAX = 6
 };
