@@ -1,13 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <utility>
 
-typedef std::int_fast64_t Coordinate_t;
+typedef std::size_t Coordinate_t;
 
 class Position {
 public:
-	Position() : x(-2), y(-2) { 
+	Position() : x(std::numeric_limits<Coordinate_t>::max()), y(std::numeric_limits<Coordinate_t>::max()) {
 		//
 	}
 	Position(Coordinate_t xVal, Coordinate_t yVal) : x(xVal), y(yVal) {

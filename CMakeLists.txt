@@ -8,8 +8,9 @@ include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/3rdparty/json")
 
 set(ricochet_files
+	src/BarrierType.h 
+	src/Color.h
 	src/Defines.h
-	src/GoalColor.h
 	src/GoalType.h
 	src/Map.h 
 	src/MapBuilder.h 
