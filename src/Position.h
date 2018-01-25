@@ -4,19 +4,23 @@
 #include <limits>
 #include <utility>
 
-typedef std::size_t Coordinate_t;
+namespace ricochet {
 
-class Position {
-public:
-	Position() : x(std::numeric_limits<Coordinate_t>::max()), y(std::numeric_limits<Coordinate_t>::max()) {
-		//
-	}
-	Position(Coordinate_t xVal, Coordinate_t yVal) : x(xVal), y(yVal) {
-		//
-	}
+	typedef std::size_t Coordinate_t;
 
-	Coordinate_t x;
-	Coordinate_t y;
-};
+	class Position {
+	public:
+		Position() : x(std::numeric_limits<Coordinate_t>::max()), y(std::numeric_limits<Coordinate_t>::max()) {
+			//
+		}
+		Position(Coordinate_t xVal, Coordinate_t yVal) : x(xVal), y(yVal) {
+			//
+		}
 
-//typedef std::pair<std::size_t, std::size_t> Position;
+		Coordinate_t x;
+		Coordinate_t y;
+	};
+
+	//typedef std::pair<std::size_t, std::size_t> Position;
+
+}
