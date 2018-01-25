@@ -1,12 +1,15 @@
 #pragma once
 
-enum class Color {
-	INVALID_MIN = 0,
-	RED = 1,
-	GREEN = 2,
-	BLUE = 3,
-	YELLOW = 4,
-	MIX = 5,
-	SILVER = 6,
-	INVALID_MAX = 7
-};
+namespace ricochet {
+
+	enum class Color {
+		RED = 0,
+		GREEN = 1,
+		BLUE = 2,
+		YELLOW = 3,
+		SILVER = 4,
+		MIX = 5,
+		INVALID_MAX = 6
+	};
+
+}
