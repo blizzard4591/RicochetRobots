@@ -1,0 +1,108 @@
+{
+   "barriers": [
+      {
+         "color": 1,
+         "type": 2,
+         "x": 0,
+         "y": 3
+      },
+      {
+         "color": 3,
+         "type": 1,
+         "x": 5,
+         "y": 6
+      }
+   ],
+   "goals": [
+      {
+         "color": 1,
+         "type": 1,
+         "x": 6,
+         "y": 4
+      },
+      {
+         "color": 4,
+         "type": 2,
+         "x": 2,
+         "y": 1
+      },
+      {
+         "color": 2,
+         "type": 3,
+         "x": 5,
+         "y": 6
+      },
+      {
+         "color": 3,
+         "type": 4,
+         "x": 1,
+         "y": 3
+      }
+   ],
+   "height": 8,
+   "obstacles": [
+      {
+         "type": 1,
+         "x": 0,
+         "y": 0
+      }
+   ],
+   "walls": [
+      {
+         "location": 2,
+         "x": 0,
+         "y": 0
+      },
+      {
+         "location": 2,
+         "x": 1,
+         "y": 5
+      },
+      {
+         "location": 2,
+         "x": 2,
+         "y": 0
+      },
+      {
+         "location": 2,
+         "x": 4,
+         "y": 7
+      },
+      {
+         "location": 2,
+         "x": 6,
+         "y": 2
+      },
+      {
+         "location": 3,
+         "x": 0,
+         "y": 0
+      },
+      {
+         "location": 3,
+         "x": 1,
+         "y": 5
+      },
+      {
+         "location": 3,
+         "x": 2,
+         "y": 4
+      },
+      {
+         "location": 3,
+         "x": 3,
+         "y": 0
+      },
+      {
+         "location": 3,
+         "x": 6,
+         "y": 1
+      },
+      {
+         "location": 3,
+         "x": 7,
+         "y": 0
+      }
+   ],
+   "width": 8
+}
