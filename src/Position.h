@@ -8,8 +8,7 @@ namespace ricochet {
 
 	typedef std::size_t Coordinate_t;
 
-	class Position {
-	public:
+	struct Position {
 		Position() : x(std::numeric_limits<Coordinate_t>::max()), y(std::numeric_limits<Coordinate_t>::max()) {
 			//
 		}
@@ -17,10 +16,19 @@ namespace ricochet {
 			//
 		}
 
+		bool operator==(Position const& other) const {
+			return x == other.x && y == other.y;
+		}
+
+		bool operator!=(Position const& other) const {
+			return x != other.x || y != other.y;
+		}
+
 		Coordinate_t x;
 		Coordinate_t y;
 	};
 
-	//typedef std::pair<std::size_t, std::size_t> Position;
+	typedef Coordinate_t coord;
+	typedef Position Pos;
 
 }

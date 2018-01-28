@@ -1,0 +1,6 @@
+[submodule "3rdparty/l3pp"]
+	path = 3rdparty/l3pp
+	url = https://github.com/hbruintjes/l3pp
+[submodule "3rdparty/tap"]
+	path = 3rdparty/tap
+	url = https://github.com/hbruintjes/tap

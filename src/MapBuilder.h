@@ -11,10 +11,11 @@ using json = nlohmann::json;
 
 #include "BarrierType.h"
 #include "Color.h"
+#include "Direction.h"
 #include "GoalType.h"
+#include "Map.h"
 #include "ObstacleType.h"
 #include "Position.h"
-#include "RelativeWallLocation.h"
 
 namespace ricochet {
 
@@ -22,7 +23,7 @@ namespace ricochet {
 	public:
 		MapBuilder(std::size_t width, std::size_t height);
 
-		void addWall(RelativeWallLocation const &wallDir, Position const &position);
+		void addWall(Direction const &wallDir, Position const &position);
 
 		void addGoal(Color const &goalColor, GoalType const &goalType, Position const &position);
 
@@ -38,19 +39,21 @@ namespace ricochet {
 
 		bool toJsonFile(std::string const& jsonFileName) const;
 
+		Map toMap() const;
+
 		class JsonWall {
 		public:
-			JsonWall() : relativeWallDirection(RelativeWallLocation::INVALID_MIN), position() {}
+			JsonWall() : relativeWallDirection(Direction::NORTH), position() {}
 
-			JsonWall(RelativeWallLocation const &a, Position const &b) : relativeWallDirection(a), position(b) {}
+			JsonWall(Direction const &a, Position const &b) : relativeWallDirection(a), position(b) {}
 
-			RelativeWallLocation relativeWallDirection;
+			Direction relativeWallDirection;
 			Position position;
 		};
 
 		class JsonGoal {
 		public:
-			JsonGoal() : goalColor(Color::INVALID_MAX), goalType(GoalType::INVALID_MIN), position() {}
+			JsonGoal() : goalColor(Color::RED), goalType(GoalType::RECTANGLE_SATURN), position() {}
 
 			JsonGoal(Color const &a, GoalType const &b, Position const &c) : goalColor(a), goalType(b), position(c) {}
 
@@ -61,7 +64,7 @@ namespace ricochet {
 
 		class JsonObstacle {
 		public:
-			JsonObstacle() : obstacleType(ObstacleType::INVALID_MIN), position() {}
+			JsonObstacle() : obstacleType(ObstacleType::INACCESSIBLE_CENTER_AREA), position() {}
 
 			JsonObstacle(ObstacleType const &a, Position const &b) : obstacleType(a), position(b) {}
 
@@ -71,7 +74,7 @@ namespace ricochet {
 
 		class JsonBarrier {
 		public:
-			JsonBarrier() : barrierType(BarrierType::INVALID_MIN), barrierColor(Color::INVALID_MAX), position() {}
+			JsonBarrier() : barrierType(BarrierType::FWD), barrierColor(Color::RED), position() {}
 
 			JsonBarrier(BarrierType const &a, Color const &b, Position const &c) : barrierType(a), barrierColor(b),
 																				   position(c) {}

@@ -7,53 +7,26 @@
 #include "Robot.h"
 #include "GoalType.h"
 #include "Color.h"
+#include "BarrierType.h"
 
 #include <variant>
 
 namespace ricochet {
 
-    typedef std::uint_fast8_t coord;
-
-    struct Pos {
-        coord x;
-        coord y;
-
-        bool operator==(Pos const& other) const {
-            return x == other.x && y == other.y;
-        }
-
-        bool operator!=(Pos const& other) const {
-            return x != other.x || y != other.y;
-        }
-
-    };
-
-    enum class Alignment {
-        FWD, // / Like forward slash
-        BWD  // \ like backslash
-    };
-
     struct Barrier {
-        Alignment alignment;
+        BarrierType alignment;
         Color color;
     };
 
     struct Goal {
-        Color color;
         GoalType type;
-    };
-
-    enum class Direction {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
+        Color color;
     };
 
     enum class TileType {
         EMPTY,
-        GOAL,
         BARRIER,
+        ROBOT,
     };
 
     struct Empty {};
@@ -61,19 +34,27 @@ namespace ricochet {
     struct Tile {
         Tile() : m_data(Empty{}) {}
         Tile(Barrier b) : m_data(std::move(b)) {}
-        Tile(Goal g) : m_data(std::move(g)) {}
+        Tile(Robot r) : m_data(std::move(r)) {}
 
         TileType getType() const {
             if (std::holds_alternative<Empty>(m_data)) {
                 return TileType::EMPTY;
             } else if (std::holds_alternative<Barrier>(m_data)) {
                 return TileType::BARRIER;
-            } else if (std::holds_alternative<Goal>(m_data)) {
-                return TileType::GOAL;
-            }d
+            } else if (std::holds_alternative<Robot>(m_data)) {
+                return TileType::ROBOT;
+            }
         }
+
+		Barrier const& barrier() const {
+			return std::get<Barrier>(m_data);
+		}
+
+		Robot const& robot() const {
+			return std::get<Robot>(m_data);
+		}
     private:
-        std::variant<Empty, Barrier, Goal> m_data;
+        std::variant<Empty, Barrier, Robot> m_data;
     };
 
     class Map {
@@ -88,25 +69,61 @@ namespace ricochet {
 
             m_tiles.resize(size);
 
-            // Place robots out of bounds
-            std::fill(m_robots.begin(), m_robots.end(), Pos{m_width, m_height});
-
             initDist();
         }
 		virtual ~Map() = default;
+
+		void insertWall(Pos const& pos, Direction dir) {
+			Pos pos2 = movePos(pos, dir);
+			Direction dir2;
+			switch(dir) {
+				case Direction::NORTH:
+					dir2 = Direction::SOUTH;
+					break;
+				case Direction::EAST:
+					dir2 = Direction::WEST;
+					break;
+				case Direction::SOUTH:
+					dir2 = Direction::NORTH;
+					break;
+				case Direction::WEST:
+					dir2 = Direction::EAST;
+					break;
+			}
+			// Insert both walls, accept single failure
+			try {
+				insertSemiWall(pos, dir);
+				try {
+					insertSemiWall(pos2, dir2);
+				} catch (std::runtime_error& e) {
+					// Ignore
+				}
+			} catch (std::runtime_error& e) {
+				// Try other position
+				insertSemiWall(pos2, dir2);
+			}
+		}
 
         void insertBarrier(Barrier const& b, Pos const& pos) {
             if (!posValid(pos)) {
                 throw std::range_error("insertBarrier: Invalid pos");
             }
-
-            // Insert semiwalls around barrier
-            insertSemiWall(pos, Direction::NORTH);
-            insertSemiWall(pos, Direction::EAST);
-            insertSemiWall(pos, Direction::SOUTH);
-            insertSemiWall(pos, Direction::WEST);
+			if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
+				throw std::runtime_error("insertBarrier: Not empty");
+			}
 
             m_tiles[coord_to_index(pos.x, pos.y)] = b;
+        }
+
+        void insertRobot(Robot const& r, Pos const& pos) {
+            if (!posValid(pos)) {
+                throw std::range_error("insertRobot: Invalid pos");
+            }
+			if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
+				throw std::runtime_error("insertRobot: Not empty");
+			}
+
+            m_tiles[coord_to_index(pos.x, pos.y)] = r;
         }
 
         void insertGoal(Goal const& g, Pos const& pos) {
@@ -116,7 +133,7 @@ namespace ricochet {
             if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
                 throw std::runtime_error("insertGoal: Not empty");
             }
-            m_tiles[coord_to_index(pos.x, pos.y)] = g;
+			m_goals.push_back(g);
         }
 
 
@@ -124,15 +141,10 @@ namespace ricochet {
             return pos.x < m_width && pos.y < m_height;
         }
 
-        void moveRobot(Pos const& newPos, Color c) {
-            auto idx = static_cast<std::underlying_type<Color>::type>(c);
-            m_robots[idx] = newPos;
-        }
-
         bool canTravel(Pos const& pos, Direction dir) const {
-            auto dObs = distToObstacle(pos, dir);
             auto dWall = distToWall(pos, dir);
-            return dObs > 0 && dWall > 0;
+			auto dObs = distToObstacle(pos, dir, dWall);
+			return dObs > 0 && dWall > 0;
         }
     private:
         coord m_width;
@@ -146,11 +158,17 @@ namespace ricochet {
 
         std::vector<Tile> m_tiles;
 
-        std::array<Pos, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> m_robots;
+        std::vector<Goal> m_goals;
 
         size_t coord_to_index(coord x, coord y) const {
             return y * m_height + x;
         }
+
+		Pos index_to_coord(std::size_t index) const {
+			coord x = index % m_width;
+			coord y = index / m_width;
+			return {x, y};
+		}
 
         auto const& getTile(Pos const& pos) const {
             return m_tiles[coord_to_index(pos.x, pos.y)];
@@ -176,8 +194,8 @@ namespace ricochet {
 
         Pos nextPos(Pos const& pos, Direction dir, Color color) const {
             while (true) {
-                auto dObs = distToObstacle(pos, dir);
-                auto dWall = distToWall(pos, dir);
+				auto dWall = distToWall(pos, dir);
+				auto dObs = distToObstacle(pos, dir, dWall);
                 auto dist = std::min(dObs, dWall);
                 if (dist == 0) {
                     // Invalid move
@@ -206,9 +224,9 @@ namespace ricochet {
                 if (curTile.getType() == TileType::BARRIER) {
                     // If barrier, change direction if required,
                     // update position
-                    auto& barrier = std::get<Barrier>(curTile);
+                    auto& barrier = curTile.barrier();
                     if (barrier.color != color) {
-                        bool fwd =barrier.alignment == Alignment::FWD;
+                        bool fwd =barrier.alignment == BarrierType::FWD;
                         switch (dir) {
                             case Direction::NORTH:
                                 if (fwd) {
@@ -248,37 +266,46 @@ namespace ricochet {
 
         }
 
-        coord distToObstacle(Pos const& pos, Direction dir) const {
-            coord dist = -1u;
+		Pos movePos(Pos const& pos, Direction dir) const {
+			switch(dir) {
+				case Direction::NORTH:
+					return {pos.x, pos.y - 1};
+				case Direction::EAST:
+					return {pos.x + 1, pos.y};
+				case Direction::SOUTH:
+					return {pos.x, pos.y + 1};
+				case Direction::WEST:
+					return {pos.x - 1, pos.y};
+			}
+		}
 
-            for(auto const& otherPos: m_robots) {
-                if (otherPos == pos) {
-                    continue;
-                }
-                switch (dir) {
-                    case Direction::NORTH:
-                        if (pos.x == otherPos.x) {
-                            dist = std::min(pos.y - otherPos.y, dist);
-                        }
-                        break;
-                    case Direction::SOUTH:
-                        if (pos.x == otherPos.x) {
-                            dist = std::min(otherPos.y - pos.y, dist);
-                        }
-                        break;
-                    case Direction::EAST:
-                        if (pos.y == otherPos.y) {
-                            dist = std::min(pos.x - otherPos.x, dist);
-                        }
-                        break;
-                    case Direction::WEST:
-                        if (pos.y == otherPos.y) {
-                            dist = std::min(otherPos.x - pos.x, dist);
-                        }
-                        break;
-                }
-            }
-            return dist;
+		size_t moveIndex(size_t index, Direction dir) const {
+			switch(dir) {
+				case Direction::NORTH:
+					return index - m_width;
+				case Direction::EAST:
+					return index + 1;
+				case Direction::SOUTH:
+					return index + m_width;
+				case Direction::WEST:
+					return index - 1;
+			}
+		}
+
+        coord distToObstacle(Pos const& pos, Direction dir, coord maxDist) const {
+            coord dist = 0;
+
+			auto idx = coord_to_index(pos.x, pos.y);
+			while(dist < maxDist) {
+				if (m_tiles[idx].getType() != TileType::EMPTY) {
+					// Obstacle
+					return dist;
+				}
+				idx = moveIndex(idx, dir);
+				++dist;
+			}
+
+            return maxDist;
         }
 
         coord distToWall(Pos const& pos, Direction dir) const {
