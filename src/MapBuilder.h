@@ -15,6 +15,7 @@ using json = nlohmann::json;
 #include "ObstacleType.h"
 #include "Position.h"
 #include "RelativeWallLocation.h"
+#include "Map.h"
 
 namespace ricochet {
 
@@ -33,6 +34,8 @@ namespace ricochet {
 		static MapBuilder fromJson(std::string const &jsonString);
 
 		std::string toJson() const;
+
+		Map toMap() const;
 
 		class JsonWall {
 		public:

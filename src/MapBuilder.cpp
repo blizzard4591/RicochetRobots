@@ -160,4 +160,18 @@ namespace ricochet {
 		return j.dump(3);
 	}
 
+	Map MapBuilder::toMap() const {
+		Map map(m_width, m_height);
+		for(auto const& w: m_walls) {
+			map.insertWall(w.position, w.relativeWallDirection);
+		}
+		for(auto const& b: m_barriers) {
+			map.insertBarrier(Barrier{b.barrierType, b.barrierColor}, b.position);
+		}
+		for(auto const& g: m_goals) {
+			map.insertGoal(Goal{g.goalType, g.goalColor}, g.position);
+		}
+		return map;
+	}
+
 }

@@ -80,12 +80,57 @@ namespace ricochet {
         }
 		virtual ~Map() = default;
 
+		void insertWall(Pos const& pos, Direction dir) {
+			Pos pos2 = movePos(pos, dir);
+			Direction dir2;
+			switch(dir) {
+				case Direction::NORTH:
+					dir2 = Direction::SOUTH;
+					break;
+				case Direction::EAST:
+					dir2 = Direction::WEST;
+					break;
+				case Direction::SOUTH:
+					dir2 = Direction::NORTH;
+					break;
+				case Direction::WEST:
+					dir2 = Direction::EAST;
+					break;
+			}
+			// Insert both walls, accept single failure
+			try {
+				insertSemiWall(pos, dir);
+				try {
+					insertSemiWall(pos2, dir2);
+				} catch (std::runtime_error& e) {
+					// Ignore
+				}
+			} catch (std::runtime_error& e) {
+				// Try other position
+				insertSemiWall(pos2, dir2);
+			}
+		}
+
         void insertBarrier(Barrier const& b, Pos const& pos) {
             if (!posValid(pos)) {
                 throw std::range_error("insertBarrier: Invalid pos");
             }
+			if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
+				throw std::runtime_error("insertBarrier: Not empty");
+			}
 
             m_tiles[coord_to_index(pos.x, pos.y)] = b;
+        }
+
+        void insertRobot(Robot const& r, Pos const& pos) {
+            if (!posValid(pos)) {
+                throw std::range_error("insertRobot: Invalid pos");
+            }
+			if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
+				throw std::runtime_error("insertRobot: Not empty");
+			}
+
+            m_tiles[coord_to_index(pos.x, pos.y)] = r;
         }
 
         void insertGoal(Goal const& g, Pos const& pos) {
@@ -125,6 +170,12 @@ namespace ricochet {
         size_t coord_to_index(coord x, coord y) const {
             return y * m_height + x;
         }
+
+		Pos index_to_coord(std::size_t index) const {
+			coord x = index % m_width;
+			coord y = index / m_width;
+			return {x, y};
+		}
 
         auto const& getTile(Pos const& pos) const {
             return m_tiles[coord_to_index(pos.x, pos.y)];
@@ -221,6 +272,19 @@ namespace ricochet {
             }
 
         }
+
+		Pos movePos(Pos const& pos, Direction dir) const {
+			switch(dir) {
+				case Direction::NORTH:
+					return {pos.x, pos.y - 1};
+				case Direction::EAST:
+					return {pos.x + 1, pos.y};
+				case Direction::SOUTH:
+					return {pos.x, pos.y + 1};
+				case Direction::WEST:
+					return {pos.x - 1, pos.y};
+			}
+		}
 
 		size_t moveIndex(size_t index, Direction dir) const {
 			switch(dir) {
