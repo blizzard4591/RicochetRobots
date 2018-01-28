@@ -9,7 +9,29 @@ namespace ricochet {
 		YELLOW = 3,
 		SILVER = 4,
 		MIX = 5,
-		INVALID_MAX = 6
 	};
+
+	inline Color colorFromInt(unsigned i) {
+		switch (i) {
+			case static_cast<std::underlying_type_t<Color>>(Color::RED):
+				return Color::RED;
+			case static_cast<std::underlying_type_t<Color>>(Color::GREEN):
+				return Color::GREEN;
+			case static_cast<std::underlying_type_t<Color>>(Color::BLUE):
+				return Color::BLUE;
+			case static_cast<std::underlying_type_t<Color>>(Color::YELLOW):
+				return Color::YELLOW;
+			case static_cast<std::underlying_type_t<Color>>(Color::SILVER):
+				return Color::SILVER;
+			case static_cast<std::underlying_type_t<Color>>(Color::MIX):
+				return Color::MIX;
+			default:
+				throw std::runtime_error("Invalid Color");
+		}
+	}
+
+	inline unsigned toInt(Color g) {
+		return static_cast<std::underlying_type_t<Color>>(g);
+	}
 
 }

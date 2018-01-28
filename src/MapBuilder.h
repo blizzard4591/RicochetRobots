@@ -36,7 +36,7 @@ namespace ricochet {
 
 		class JsonWall {
 		public:
-			JsonWall() : relativeWallDirection(RelativeWallLocation::INVALID_MIN), position() {}
+			JsonWall() : relativeWallDirection(RelativeWallLocation::ABOVE_OF), position() {}
 
 			JsonWall(RelativeWallLocation const &a, Position const &b) : relativeWallDirection(a), position(b) {}
 
@@ -46,7 +46,7 @@ namespace ricochet {
 
 		class JsonGoal {
 		public:
-			JsonGoal() : goalColor(Color::INVALID_MAX), goalType(GoalType::INVALID_MIN), position() {}
+			JsonGoal() : goalColor(Color::RED), goalType(GoalType::RECTANGLE_SATURN), position() {}
 
 			JsonGoal(Color const &a, GoalType const &b, Position const &c) : goalColor(a), goalType(b), position(c) {}
 
@@ -57,7 +57,7 @@ namespace ricochet {
 
 		class JsonObstacle {
 		public:
-			JsonObstacle() : obstacleType(ObstacleType::INVALID_MIN), position() {}
+			JsonObstacle() : obstacleType(ObstacleType::INACCESSIBLE_CENTER_AREA), position() {}
 
 			JsonObstacle(ObstacleType const &a, Position const &b) : obstacleType(a), position(b) {}
 
@@ -67,7 +67,7 @@ namespace ricochet {
 
 		class JsonBarrier {
 		public:
-			JsonBarrier() : barrierType(BarrierType::INVALID_MIN), barrierColor(Color::INVALID_MAX), position() {}
+			JsonBarrier() : barrierType(BarrierType::FWD), barrierColor(Color::RED), position() {}
 
 			JsonBarrier(BarrierType const &a, Color const &b, Position const &c) : barrierType(a), barrierColor(b),
 																				   position(c) {}
