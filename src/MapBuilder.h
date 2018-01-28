@@ -11,11 +11,11 @@ using json = nlohmann::json;
 
 #include "BarrierType.h"
 #include "Color.h"
+#include "Direction.h"
 #include "GoalType.h"
+#include "Map.h"
 #include "ObstacleType.h"
 #include "Position.h"
-#include "RelativeWallLocation.h"
-#include "Map.h"
 
 namespace ricochet {
 
@@ -23,7 +23,7 @@ namespace ricochet {
 	public:
 		MapBuilder(std::size_t width, std::size_t height);
 
-		void addWall(RelativeWallLocation const &wallDir, Position const &position);
+		void addWall(Direction const &wallDir, Position const &position);
 
 		void addGoal(Color const &goalColor, GoalType const &goalType, Position const &position);
 
@@ -39,11 +39,11 @@ namespace ricochet {
 
 		class JsonWall {
 		public:
-			JsonWall() : relativeWallDirection(RelativeWallLocation::ABOVE_OF), position() {}
+			JsonWall() : relativeWallDirection(Direction::NORTH), position() {}
 
-			JsonWall(RelativeWallLocation const &a, Position const &b) : relativeWallDirection(a), position(b) {}
+			JsonWall(Direction const &a, Position const &b) : relativeWallDirection(a), position(b) {}
 
-			RelativeWallLocation relativeWallDirection;
+			Direction relativeWallDirection;
 			Position position;
 		};
 

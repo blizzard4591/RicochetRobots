@@ -29,7 +29,7 @@ namespace ricochet {
 	}
 
 	void from_json(json const &j, MapBuilder::JsonWall &o) {
-		o.relativeWallDirection = relativeWallLocationFromInt(j.at("location").get<std::size_t>());
+		o.relativeWallDirection = directionFromInt(j.at("location").get<std::size_t>());
 		o.position.x = j.at("x").get<Coordinate_t>();
 		o.position.y = j.at("y").get<Coordinate_t>();
 	}
@@ -74,7 +74,7 @@ namespace ricochet {
 		m_barriers.push_back(jsonBarrier);
 	}
 
-	void MapBuilder::addWall(RelativeWallLocation const &wallDir, Position const &position) {
+	void MapBuilder::addWall(Direction const &wallDir, Position const &position) {
 		addWall(JsonWall(wallDir, position));
 	}
 

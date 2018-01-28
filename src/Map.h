@@ -23,13 +23,6 @@ namespace ricochet {
         Color color;
     };
 
-    enum class Direction {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    };
-
     enum class TileType {
         EMPTY,
         BARRIER,

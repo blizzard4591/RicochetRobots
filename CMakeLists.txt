@@ -13,7 +13,8 @@ set(ricochet_files
 	src/BarrierType.h 
 	src/Color.h
 	src/Defines.h
-	src/GoalType.h
+    src/Direction.h
+    src/GoalType.h
 	src/Map.h 
 	src/MapBuilder.h 
 	src/MapBuilder.cpp
@@ -23,8 +24,7 @@ set(ricochet_files
 	src/OccupationData.cpp 
 	src/Position.h
 	src/ReachabilityAnalysis.h 
-	src/RelativeWallLocation.h
-	src/Robot.h 
+	src/Robot.h
 	src/TileOccupation.h
 )
 
