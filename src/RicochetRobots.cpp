@@ -6,6 +6,11 @@
 #include <tap/Tap.h>
 
 #include <iostream>
+#include <string>
+#include <string>
+#include "MapBuilder.h"
+
+static std::string mapname;
 
 void initLog() {
 	l3pp::Logger::initialize();
@@ -15,8 +20,9 @@ void initLog() {
 }
 
 bool processArgs(int argc, char* argv[]) {
+	TAP::VariableArgument<std::string> map("Load map", mapname);
 	TAP::Argument help("Show this &help text");
-	TAP::ArgumentParser parser(help);
+	TAP::ArgumentParser parser(help, +map);
 	try {
 		parser.parse(argc, argv);
 	} catch (TAP::exception& e) {
@@ -33,7 +39,17 @@ bool processArgs(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
 	initLog();
 	processArgs(argc, argv);
-	L3PP_LOG_INFO(l3pp::Logger::getRootLogger(), "Starting rrobots");
+	L3PP_LOG_INFO(l3pp::Logger::getRootLogger(), "Starting rrobots, map " << mapname);
+
+	std::ifstream t(mapname);
+	if (!t) {
+		L3PP_LOG_ERROR(l3pp::Logger::getRootLogger(), "Cannot open map");
+		return 1;
+	}
+	std::stringstream buffer;
+	buffer << t.rdbuf();
+	ricochet::MapBuilder builder = ricochet::MapBuilder::fromJson(buffer.str());
+
 	return 0;
 }
 

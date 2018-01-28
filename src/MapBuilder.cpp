@@ -91,7 +91,7 @@ namespace ricochet {
 	}
 
 	MapBuilder MapBuilder::fromJson(std::string const &jsonString) {
-		json const j = jsonString;
+		auto const j = json::parse(jsonString);
 
 		auto width = j.at("width").get<std::size_t>();
 		auto height = j.at("height").get<std::size_t>();
@@ -109,16 +109,20 @@ namespace ricochet {
 			mb.addGoal(goal.goalColor, goal.goalType, goal.position);
 		}
 
-		json obstacles = j["obstacles"];
-		for (auto &element : obstacles) {
-			auto obstacle = element.get<JsonObstacle>();
-			mb.addObstacle(obstacle.obstacleType, obstacle.position);
+		if (j.count("obstacles")) {
+			json obstacles = j["obstacles"];
+			for (auto &element : obstacles) {
+				auto obstacle = element.get<JsonObstacle>();
+				mb.addObstacle(obstacle.obstacleType, obstacle.position);
+			}
 		}
 
-		json barriers = j["barriers"];
-		for (auto &element : barriers) {
-			auto barrier = element.get<JsonBarrier>();
-			mb.addBarrier(barrier.barrierColor, barrier.barrierType, barrier.position);
+		if (j.count("barriers")) {
+			json barriers = j["barriers"];
+			for (auto &element : barriers) {
+				auto barrier = element.get<JsonBarrier>();
+				mb.addBarrier(barrier.barrierColor, barrier.barrierType, barrier.position);
+			}
 		}
 
 		return mb;
