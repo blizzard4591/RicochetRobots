@@ -9,6 +9,7 @@
 #include <string>
 #include <string>
 #include "MapBuilder.h"
+#include "Map.h"
 
 static std::string mapname;
 
@@ -49,6 +50,8 @@ int main(int argc, char* argv[]) {
 	std::stringstream buffer;
 	buffer << t.rdbuf();
 	ricochet::MapBuilder builder = ricochet::MapBuilder::fromJson(buffer.str());
+
+	ricochet::Map map(10, 10);
 
 	return 0;
 }

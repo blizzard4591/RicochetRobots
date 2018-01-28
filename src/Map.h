@@ -52,6 +52,14 @@ namespace ricochet {
                 return TileType::GOAL;
             }
         }
+
+		Barrier const& barrier() const {
+			return std::get<Barrier>(m_data);
+		}
+
+		Goal const& goal() const {
+			return std::get<Goal>(m_data);
+		}
     private:
         std::variant<Empty, Barrier, Goal> m_data;
     };
@@ -186,7 +194,7 @@ namespace ricochet {
                 if (curTile.getType() == TileType::BARRIER) {
                     // If barrier, change direction if required,
                     // update position
-                    auto& barrier = std::get<Barrier>(curTile);
+                    auto& barrier = curTile.barrier();
                     if (barrier.color != color) {
                         bool fwd =barrier.alignment == BarrierType::FWD;
                         switch (dir) {
