@@ -9,7 +9,9 @@ namespace ricochet {
 		WEST
 	};
 
-	inline Direction directionFromInt(unsigned i) {
+	using direction_t = std::underlying_type_t<Direction>;
+
+	inline Direction directionFromInt(direction_t i) {
 		switch (i) {
 			case static_cast<std::underlying_type_t<Direction>>(Direction::NORTH):
 				return Direction::NORTH;
@@ -24,7 +26,7 @@ namespace ricochet {
 		}
 	}
 
-	inline unsigned toInt(Direction g) {
+	inline direction_t toInt(Direction g) {
 		return static_cast<std::underlying_type_t<Direction>>(g);
 	}
 

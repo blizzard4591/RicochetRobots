@@ -6,7 +6,9 @@ namespace ricochet {
 		INACCESSIBLE_CENTER_AREA = 1,
 	};
 
-	inline ObstacleType obstacleTypeFromInt(unsigned i) {
+	using obstacletype_t = std::underlying_type_t<ObstacleType>;
+
+	inline ObstacleType obstacleTypeFromInt(obstacletype_t i) {
 		switch (i) {
 			case static_cast<std::underlying_type_t<ObstacleType>>(ObstacleType::INACCESSIBLE_CENTER_AREA):
 				return ObstacleType::INACCESSIBLE_CENTER_AREA;
@@ -15,7 +17,7 @@ namespace ricochet {
 		}
 	}
 
-	inline unsigned toInt(ObstacleType g) {
+	inline obstacletype_t toInt(ObstacleType g) {
 		return static_cast<std::underlying_type_t<ObstacleType>>(g);
 	}
 

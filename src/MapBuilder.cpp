@@ -33,27 +33,27 @@ namespace ricochet {
 	}
 
 	void from_json(json const &j, MapBuilder::JsonWall &o) {
-		o.relativeWallDirection = directionFromInt(j.at("location").get<std::size_t>());
+		o.relativeWallDirection = directionFromInt(j.at("location").get<direction_t>());
 		o.position.x = j.at("x").get<Coordinate_t>();
 		o.position.y = j.at("y").get<Coordinate_t>();
 	}
 
 	void from_json(json const &j, MapBuilder::JsonGoal &o) {
-		o.goalColor = colorFromInt(j.at("color").get<std::size_t>());
-		o.goalType = goaltypeFromInt(j.at("type").get<std::size_t>());
+		o.goalColor = colorFromInt(j.at("color").get<color_t>());
+		o.goalType = goaltypeFromInt(j.at("type").get<goaltype_t>());
 		o.position.x = j.at("x").get<Coordinate_t>();
 		o.position.y = j.at("y").get<Coordinate_t>();
 	}
 
 	void from_json(json const &j, MapBuilder::JsonObstacle &o) {
-		o.obstacleType = obstacleTypeFromInt(j.at("type").get<std::size_t>());
+		o.obstacleType = obstacleTypeFromInt(j.at("type").get<obstacletype_t>());
 		o.position.x = j.at("x").get<Coordinate_t>();
 		o.position.y = j.at("y").get<Coordinate_t>();
 	}
 
 	void from_json(json const &j, MapBuilder::JsonBarrier &o) {
-		o.barrierColor = colorFromInt(j.at("color").get<std::size_t>());
-		o.barrierType = barrierTypeFromInt(j.at("type").get<std::size_t>());
+		o.barrierColor = colorFromInt(j.at("color").get<color_t>());
+		o.barrierType = barrierTypeFromInt(j.at("type").get<barriertype_t>());
 		o.position.x = j.at("x").get<Coordinate_t>();
 		o.position.y = j.at("y").get<Coordinate_t>();
 	}

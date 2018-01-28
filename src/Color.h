@@ -11,7 +11,9 @@ namespace ricochet {
 		MIX = 5,
 	};
 
-	inline Color colorFromInt(unsigned i) {
+	using color_t = std::underlying_type_t<BarrierType>;
+
+	inline Color colorFromInt(color_t i) {
 		switch (i) {
 			case static_cast<std::underlying_type_t<Color>>(Color::RED):
 				return Color::RED;
@@ -30,7 +32,7 @@ namespace ricochet {
 		}
 	}
 
-	inline unsigned toInt(Color g) {
+	inline color_t toInt(Color g) {
 		return static_cast<std::underlying_type_t<Color>>(g);
 	}
 

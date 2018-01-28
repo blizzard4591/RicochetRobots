@@ -10,7 +10,9 @@ namespace ricochet {
 		SWIRLY_SWIRL = 5,
 	};
 
-	inline GoalType goaltypeFromInt(unsigned i) {
+	using goaltype_t = std::underlying_type_t<GoalType>;
+
+	inline GoalType goaltypeFromInt(goaltype_t i) {
 		switch (i) {
 			case static_cast<std::underlying_type_t<GoalType>>(GoalType::RECTANGLE_SATURN):
 				return GoalType::RECTANGLE_SATURN;
@@ -27,7 +29,7 @@ namespace ricochet {
 		}
 	}
 
-	inline unsigned toInt(GoalType g) {
+	inline goaltype_t toInt(GoalType g) {
 		return static_cast<std::underlying_type_t<GoalType>>(g);
 	}
 

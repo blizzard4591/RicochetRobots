@@ -9,7 +9,9 @@ namespace ricochet {
 		UPPER_LEFT_TO_LOWER_RIGHT = 1,
 	};
 
-	inline BarrierType barrierTypeFromInt(unsigned i) {
+	using barriertype_t = std::underlying_type_t<BarrierType>;
+
+	inline BarrierType barrierTypeFromInt(barriertype_t i) {
 		switch (i) {
 			case static_cast<std::underlying_type_t<BarrierType>>(BarrierType::LOWER_LEFT_TO_UPPER_RIGHT):
 				return BarrierType::LOWER_LEFT_TO_UPPER_RIGHT;
@@ -20,7 +22,7 @@ namespace ricochet {
 		}
 	}
 
-	inline unsigned toInt(BarrierType g) {
+	inline barriertype_t toInt(BarrierType g) {
 		return static_cast<std::underlying_type_t<BarrierType>>(g);
 	}
 

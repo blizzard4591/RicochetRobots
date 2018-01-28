@@ -146,6 +146,10 @@ namespace ricochet {
 			auto dObs = distToObstacle(pos, dir, dWall);
 			return dObs > 0 && dWall > 0;
         }
+
+		void moveRobot(Pos const& oldPos, Pos const& newPos) {
+
+		}
     private:
         coord m_width;
         coord m_height;
