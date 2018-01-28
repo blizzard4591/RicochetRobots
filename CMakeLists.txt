@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/3rdparty/json")
+include_directories("${PROJECT_SOURCE_DIR}/3rdparty/l3pp")
+include_directories("${PROJECT_SOURCE_DIR}/3rdparty/tap/include")
 
 set(ricochet_files
 	src/BarrierType.h 
