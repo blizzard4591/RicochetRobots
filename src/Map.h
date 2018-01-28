@@ -7,40 +7,20 @@
 #include "Robot.h"
 #include "GoalType.h"
 #include "Color.h"
+#include "BarrierType.h"
 
 #include <variant>
 
 namespace ricochet {
 
-    typedef std::uint_fast8_t coord;
-
-    struct Pos {
-        coord x;
-        coord y;
-
-        bool operator==(Pos const& other) const {
-            return x == other.x && y == other.y;
-        }
-
-        bool operator!=(Pos const& other) const {
-            return x != other.x || y != other.y;
-        }
-
-    };
-
-    enum class Alignment {
-        FWD, // / Like forward slash
-        BWD  // \ like backslash
-    };
-
     struct Barrier {
-        Alignment alignment;
+        BarrierType alignment;
         Color color;
     };
 
     struct Goal {
-        Color color;
         GoalType type;
+        Color color;
     };
 
     enum class Direction {
@@ -70,7 +50,7 @@ namespace ricochet {
                 return TileType::BARRIER;
             } else if (std::holds_alternative<Goal>(m_data)) {
                 return TileType::GOAL;
-            }d
+            }
         }
     private:
         std::variant<Empty, Barrier, Goal> m_data;
@@ -208,7 +188,7 @@ namespace ricochet {
                     // update position
                     auto& barrier = std::get<Barrier>(curTile);
                     if (barrier.color != color) {
-                        bool fwd =barrier.alignment == Alignment::FWD;
+                        bool fwd =barrier.alignment == BarrierType::FWD;
                         switch (dir) {
                             case Direction::NORTH:
                                 if (fwd) {
