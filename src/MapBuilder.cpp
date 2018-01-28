@@ -99,7 +99,7 @@ namespace ricochet {
 
 		inFile.open(jsonFileName);
 		if (!inFile) {
-			throw std::exception("Could not open input file!");
+			throw std::runtime_error("Could not open input file!");
 		}
 
 		std::string jsonString;
@@ -119,7 +119,7 @@ namespace ricochet {
 		std::ofstream outFile;
 		outFile.open(jsonFileName);
 		if (!outFile) {
-			throw std::exception("Could not open output file!");
+			throw std::runtime_error("Could not open output file!");
 		}
 
 		outFile << jsonString;
