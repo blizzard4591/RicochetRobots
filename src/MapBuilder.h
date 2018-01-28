@@ -32,7 +32,11 @@ namespace ricochet {
 
 		static MapBuilder fromJson(std::string const &jsonString);
 
+		static MapBuilder fromJsonFile(std::string const& jsonFileName);
+
 		std::string toJson() const;
+
+		bool toJsonFile(std::string const& jsonFileName) const;
 
 		class JsonWall {
 		public:

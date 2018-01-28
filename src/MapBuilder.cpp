@@ -1,5 +1,9 @@
 #include "MapBuilder.h"
 
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
 namespace ricochet {
 
 	void to_json(json &j, MapBuilder::JsonWall const &o) {
@@ -111,6 +115,38 @@ namespace ricochet {
 
 	void MapBuilder::addObstacle(ObstacleType const &obstacleType, Position const &position) {
 		addObstacle(JsonObstacle(obstacleType, position));
+	}
+
+	MapBuilder MapBuilder::fromJsonFile(std::string const& jsonFileName) {
+		std::ifstream inFile;
+
+		inFile.open(jsonFileName);
+		if (!inFile) {
+			throw std::exception("Could not open input file!");
+		}
+
+		std::string jsonString;
+		inFile.seekg(0, std::ios::end);
+		jsonString.reserve(inFile.tellg());
+		inFile.seekg(0, std::ios::beg);
+
+		jsonString.assign((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+		inFile.close();
+
+		return fromJson(jsonString);
+	}
+
+	bool MapBuilder::toJsonFile(std::string const& jsonFileName) const {
+		std::string const jsonString = toJson();
+		
+		std::ofstream outFile;
+		outFile.open(jsonFileName);
+		if (!outFile) {
+			throw std::exception("Could not open output file!");
+		}
+
+		outFile << jsonString;
+		outFile.close();
 	}
 
 	MapBuilder MapBuilder::fromJson(std::string const &jsonString) {
