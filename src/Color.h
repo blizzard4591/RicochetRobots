@@ -11,7 +11,7 @@ namespace ricochet {
 		MIX = 5,
 	};
 
-	using color_t = std::underlying_type_t<BarrierType>;
+	using color_t = std::underlying_type_t<Color>;
 
 	inline Color colorFromInt(color_t i) {
 		switch (i) {

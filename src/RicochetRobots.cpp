@@ -34,6 +34,8 @@ bool processArgs(int argc, char* argv[]) {
 		std::cout << parser.help() << std::endl;
 		return false;
 	}
+
+	return true;
 }
 
 

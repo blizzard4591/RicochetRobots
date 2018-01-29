@@ -119,11 +119,13 @@ namespace ricochet {
 		std::ofstream outFile;
 		outFile.open(jsonFileName);
 		if (!outFile) {
-			throw std::runtime_error("Could not open output file!");
+			return false;
 		}
 
 		outFile << jsonString;
 		outFile.close();
+
+		return true;
 	}
 
 	MapBuilder MapBuilder::fromJson(std::string const &jsonString) {
