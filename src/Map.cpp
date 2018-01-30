@@ -69,15 +69,15 @@ namespace ricochet {
 
 				size_t const lineIndex = y * 3u;
 				if (!canGoUp) {
-					lines.at(lineIndex).append(" ─ ");
+					lines.at(lineIndex).append("┌─┐");
 				} else {
-					lines.at(lineIndex).append("   ");
+					lines.at(lineIndex).append("┌ ┐");
 				}
 
 				if (!canGoDown) {
-					lines.at(lineIndex + 2u).append(" ─ ");
+					lines.at(lineIndex + 2u).append("└─┘");
 				} else {
-					lines.at(lineIndex + 2u).append("   ");
+					lines.at(lineIndex + 2u).append("└ ┘");
 				}
 
 				if (!canGoLeft) {
@@ -93,7 +93,11 @@ namespace ricochet {
 					case TileType::BARRIER:
 					{
 						Barrier const& barrier = tile.barrier();
-						lines.at(lineIndex + 1u).append("B");
+						if (barrier.alignment == BarrierType::FWD) {
+							lines.at(lineIndex + 1u).append("╱");
+						} else {
+							lines.at(lineIndex + 1u).append("╲");
+						}
 						break;
 					}
 					case TileType::ROBOT:
