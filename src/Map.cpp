@@ -381,40 +381,44 @@ namespace ricochet {
 
 		switch (dir) {
 			case Direction::NORTH:
-				for (coord y = pos.y, dist = 0; y <= pos.y; dist++, y--) {
-					if (m_northDist[coord_to_index(pos.x, y)] <= dist) {
+				for (coord y = pos.y, dist = 0; y < m_height; dist++, y++) {
+					const auto idx = coord_to_index(pos.x, y);
+					if (m_northDist[idx] == 0) {
 						break;
 					}
-					assert(dist <= m_northDist[coord_to_index(pos.x, y)]);
-					m_northDist[coord_to_index(pos.x, y)] = dist;
+					assert(dist <= m_northDist[idx]);
+					m_northDist[idx] = dist;
 				}
 				break;
 			case Direction::EAST:
 				for (coord x = pos.x, dist = 0; x <= pos.x; dist++, x--) {
-					if (m_eastDist[coord_to_index(x, pos.y)] <= dist) {
+					const auto idx = coord_to_index(x, pos.y);
+					if (m_eastDist[idx] == 0) {
 						break;
 					}
 					assert(dist <= m_eastDist[coord_to_index(x, pos.y)]);
-					m_eastDist[coord_to_index(x, pos.y)] = dist;
+					m_eastDist[idx] = dist;
 				}
 				break;
 			case Direction::SOUTH:
-				for (coord y = pos.y, dist = 0; y < m_height; y++, dist++) {
-					if (m_southDist[coord_to_index(pos.x, y)] <= dist) {
+				for (coord y = pos.y, dist = 0; y <= pos.y; y--, dist++) {
+					const auto idx = coord_to_index(pos.x, y);
+					if (m_southDist[idx] == 0) {
 						break;
 					}
 
-					assert(dist <= m_southDist[coord_to_index(pos.x, y)]);
-					m_southDist[coord_to_index(pos.x, y)] = dist;
+					assert(dist <= m_southDist[idx]);
+					m_southDist[idx] = dist;
 				}
 				break;
 			case Direction::WEST:
 				for (coord x = pos.x, dist = 0; x < m_width; x++, dist++) {
-					if (m_westDist[coord_to_index(x, pos.y)] <= dist) {
+					const auto idx = coord_to_index(x, pos.y);
+					if (m_westDist[idx] == 0) {
 						break;
 					}
 					assert(dist <= m_westDist[coord_to_index(x, pos.y)]);
-					m_westDist[coord_to_index(x, pos.y)] = dist;
+					m_westDist[idx] = dist;
 				}
 				break;
 		}
