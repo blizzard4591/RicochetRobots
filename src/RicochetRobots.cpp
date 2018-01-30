@@ -53,6 +53,10 @@ int main(int argc, char* argv[]) {
 	buffer << t.rdbuf();
 	ricochet::MapBuilder builder = ricochet::MapBuilder::fromJson(buffer.str());
 
+	ricochet::Map test = builder.toMap();
+	std::cout << "Map data: " << std::endl;
+	std::cout << test.toString() << std::endl;
+
 	ricochet::Map map(10, 10);
 
 	return 0;

@@ -3,10 +3,10 @@
 namespace ricochet {
 
 	enum class BarrierType {
-		FWD = 0,
-		LOWER_LEFT_TO_UPPER_RIGHT = 0,
-		BWD = 1,
-		UPPER_LEFT_TO_LOWER_RIGHT = 1,
+		FWD = 1,
+		LOWER_LEFT_TO_UPPER_RIGHT = 1,
+		BWD = 2,
+		UPPER_LEFT_TO_LOWER_RIGHT = 2,
 	};
 
 	using barriertype_t = std::underlying_type_t<BarrierType>;

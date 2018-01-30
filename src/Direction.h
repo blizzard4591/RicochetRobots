@@ -3,10 +3,10 @@
 namespace ricochet {
 
 	enum class Direction {
-		NORTH,
-		EAST,
-		SOUTH,
-		WEST
+		NORTH = 1,
+		EAST = 2,
+		SOUTH = 3,
+		WEST = 4
 	};
 
 	using direction_t = std::underlying_type_t<Direction>;
