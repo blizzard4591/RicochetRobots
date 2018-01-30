@@ -52,12 +52,12 @@ namespace ricochet {
 
 		std::vector<std::string> lines;
 		lines.resize(m_height * 3u);
-		for (size_t i = 0; i < lines.size(); ++i) {
-			lines.at(i).reserve(m_width * 3u);
+		for (auto& line: lines) {
+			line.reserve(m_width * 3u);
 		}
 
-		for (coord x = 0; x < m_width; ++x) {
-			for (coord y = 0; y < m_height; ++y) {
+		for (coord y = 0; y < m_height; ++y) {
+			for (coord x = 0; x < m_width; ++x) {
 				Pos const pos = Pos(x, y);
 				Tile const& tile = getTile(pos);
 				TileType const tileType = tile.getType();
@@ -69,19 +69,19 @@ namespace ricochet {
 
 				size_t const lineIndex = y * 3u;
 				if (!canGoUp) {
-					lines.at(lineIndex).append(" - ");
+					lines.at(lineIndex).append(" ─ ");
 				} else {
 					lines.at(lineIndex).append("   ");
 				}
 
 				if (!canGoDown) {
-					lines.at(lineIndex + 2u).append(" - ");
+					lines.at(lineIndex + 2u).append(" ─ ");
 				} else {
 					lines.at(lineIndex + 2u).append("   ");
 				}
 
 				if (!canGoLeft) {
-					lines.at(lineIndex + 1u).append("|");
+					lines.at(lineIndex + 1u).append("│");
 				} else {
 					lines.at(lineIndex + 1u).append(" ");
 				}
@@ -107,15 +107,15 @@ namespace ricochet {
 				}
 
 				if (!canGoRight) {
-					lines.at(lineIndex + 1u).append("|");
+					lines.at(lineIndex + 1u).append("│");
 				} else {
 					lines.at(lineIndex + 1u).append(" ");
 				}
 			}
 		}
 
-		for (size_t i = 0; i < lines.size(); ++i) {
-			ss << lines.at(i) << std::endl;
+		for (auto& line: lines) {
+			ss << line << '\n';
 		}
 
 		return ss.str();

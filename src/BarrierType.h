@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 namespace ricochet {
 
 	enum class BarrierType {
