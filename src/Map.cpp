@@ -47,10 +47,10 @@ namespace ricochet {
 		return m_height;
 	}
 
-	std::string Map::toString() const {
-		std::stringstream ss;
+	std::wstring Map::toString() const {
+		std::wstringstream ss;
 
-		std::vector<std::string> lines;
+		std::vector<std::wstring> lines;
 		lines.resize(m_height * 3u);
 		for (auto& line: lines) {
 			line.reserve(m_width * 3u);
@@ -69,41 +69,41 @@ namespace ricochet {
 
 				size_t const lineIndex = y * 3u;
 				if (!canGoUp) {
-					lines.at(lineIndex).append("┌─┐");
+					lines.at(lineIndex).append(L"┌─┐");
 				} else {
-					lines.at(lineIndex).append("┌ ┐");
+					lines.at(lineIndex).append(L"┌ ┐");
 				}
 
 				if (!canGoDown) {
-					lines.at(lineIndex + 2u).append("└─┘");
+					lines.at(lineIndex + 2u).append(L"└─┘");
 				} else {
-					lines.at(lineIndex + 2u).append("└ ┘");
+					lines.at(lineIndex + 2u).append(L"└ ┘");
 				}
 
 				if (!canGoLeft) {
-					lines.at(lineIndex + 1u).append("│");
+					lines.at(lineIndex + 1u).append(L"│");
 				} else {
-					lines.at(lineIndex + 1u).append(" ");
+					lines.at(lineIndex + 1u).append(L" ");
 				}
 
 				switch (tileType) {
 					case TileType::EMPTY:
-						lines.at(lineIndex + 1u).append(" ");
+						lines.at(lineIndex + 1u).append(L" ");
 						break;
 					case TileType::BARRIER:
 					{
 						Barrier const& barrier = tile.barrier();
 						if (barrier.alignment == BarrierType::FWD) {
-							lines.at(lineIndex + 1u).append("╱");
+							lines.at(lineIndex + 1u).append(L"╱");
 						} else {
-							lines.at(lineIndex + 1u).append("╲");
+							lines.at(lineIndex + 1u).append(L"╲");
 						}
 						break;
 					}
 					case TileType::ROBOT:
 					{
 						Robot const& robot = tile.robot();
-						lines.at(lineIndex + 1u).append("R");
+						lines.at(lineIndex + 1u).append(L"R");
 						break;
 					}
 					default:
@@ -111,15 +111,15 @@ namespace ricochet {
 				}
 
 				if (!canGoRight) {
-					lines.at(lineIndex + 1u).append("│");
+					lines.at(lineIndex + 1u).append(L"│");
 				} else {
-					lines.at(lineIndex + 1u).append(" ");
+					lines.at(lineIndex + 1u).append(L" ");
 				}
 			}
 		}
 
 		for (auto& line: lines) {
-			ss << line << '\n';
+			ss << line << std::endl;
 		}
 
 		return ss.str();

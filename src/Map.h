@@ -87,7 +87,7 @@ namespace ricochet {
 
 		void moveRobot(Pos const& oldPos, Pos const& newPos);
 
-		std::string toString() const;
+		std::wstring toString() const;
 	private:
 		coord m_width;
 		coord m_height;
