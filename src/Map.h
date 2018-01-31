@@ -87,6 +87,8 @@ namespace ricochet {
 
 		void moveRobot(Pos const& oldPos, Pos const& newPos);
 
+		Pos nextPos(Pos const& pos, Direction dir, Color color) const;
+
 		std::string toString() const;
 	private:
 		coord m_width;
@@ -112,9 +114,7 @@ namespace ricochet {
 
 		void initDist();
 
-		Pos nextPos(Pos const& pos, Direction dir, Color color) const;
-
-		Pos movePos(Pos const& pos, Direction dir) const;
+		Pos movePos(Pos const& pos, Direction dir, coord dist = 1) const;
 
 		size_t moveIndex(size_t index, Direction dir) const;
 

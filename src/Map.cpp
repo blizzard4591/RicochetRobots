@@ -248,7 +248,7 @@ namespace ricochet {
 	}
 
 	Pos Map::nextPos(Pos const& pos, Direction dir, Color color) const {
-		Pos newPos;
+		Pos newPos = pos;
 		while (true) {
 			auto dWall = distToWall(pos, dir);
 			auto dObs = distToObstacle(pos, dir, dWall);
@@ -257,22 +257,7 @@ namespace ricochet {
 				// Invalid move
 				throw std::runtime_error("TODO: Handle invalid move");
 			}
-			newPos = pos;
-			switch (dir) {
-				case Direction::NORTH:
-					newPos.y -= dist;
-					break;
-				case Direction::SOUTH:
-					newPos.y += dist;
-					break;
-				case Direction::EAST:
-					newPos.x += dist;
-					break;
-				case Direction::WEST:
-					newPos.x -= dist;
-					break;
-
-			}
+			newPos = movePos(newPos, dir, dist);
 
 			//TODO: check if newPos occurred before to break cycles
 
@@ -322,16 +307,16 @@ namespace ricochet {
 		return newPos;
 	}
 
-	Pos Map::movePos(Pos const& pos, Direction dir) const {
+	Pos Map::movePos(Pos const& pos, Direction dir, coord dist) const {
 		switch (dir) {
 			case Direction::NORTH:
-				return { pos.x, pos.y - 1 };
+				return { pos.x, pos.y - dist };
 			case Direction::EAST:
-				return { pos.x + 1, pos.y };
+				return { pos.x + dist, pos.y };
 			case Direction::SOUTH:
-				return { pos.x, pos.y + 1 };
+				return { pos.x, pos.y + dist };
 			case Direction::WEST:
-				return { pos.x - 1, pos.y };
+				return { pos.x - dist, pos.y };
 			default:
 				throw std::runtime_error("Invalid Direction value passed to movePos!");
 		}
@@ -356,6 +341,7 @@ namespace ricochet {
 		coord dist = 0;
 
 		auto idx = coord_to_index(pos.x, pos.y);
+		idx = moveIndex(idx, dir);
 		while (dist < maxDist) {
 			if (m_tiles[idx].getType() != TileType::EMPTY) {
 				// Obstacle

@@ -54,10 +54,17 @@ int main(int argc, char* argv[]) {
 	ricochet::MapBuilder builder = ricochet::MapBuilder::fromJson(buffer.str());
 
 	ricochet::Map test = builder.toMap();
+	test.insertRobot(ricochet::Robot::BLUE, ricochet::Pos{1, 0});
+	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
 	std::cout << "Map data: " << std::endl;
 	std::cout << test.toString() << std::endl;
 
-	ricochet::Map map(10, 10);
+	auto next = test.nextPos(ricochet::Pos{1, 0}, ricochet::Direction::SOUTH, ricochet::Color::BLUE);
+
+	test.moveRobot(ricochet::Pos{1, 0}, next);
+
+	std::cout << "Map data: " << std::endl;
+	std::cout << test.toString() << std::endl;
 
 	return 0;
 }
