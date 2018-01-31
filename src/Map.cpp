@@ -250,8 +250,8 @@ namespace ricochet {
 	Pos Map::nextPos(Pos const& pos, Direction dir, Color color) const {
 		Pos newPos = pos;
 		while (true) {
-			auto dWall = distToWall(pos, dir);
-			auto dObs = distToObstacle(pos, dir, dWall);
+			auto dWall = distToWall(newPos, dir);
+			auto dObs = distToObstacle(newPos, dir, dWall);
 			auto dist = std::min(dObs, dWall);
 			if (dist == 0) {
 				// Invalid move

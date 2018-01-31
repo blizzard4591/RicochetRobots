@@ -56,6 +56,7 @@ int main(int argc, char* argv[]) {
 	ricochet::Map test = builder.toMap();
 	test.insertRobot(ricochet::Robot::BLUE, ricochet::Pos{1, 0});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
+	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{5, 5});
 	std::cout << "Map data: " << std::endl;
 	std::cout << test.toString() << std::endl;
 
