@@ -345,6 +345,10 @@ namespace ricochet {
 		while (dist < maxDist) {
 			if (m_tiles[idx].getType() != TileType::EMPTY) {
 				// Obstacle
+				if (m_tiles[idx].getType() == TileType::BARRIER) {
+					// Move ontop of barrier
+					return dist + 1;
+				}
 				return dist;
 			}
 			idx = moveIndex(idx, dir);
