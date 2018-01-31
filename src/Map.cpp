@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include <utility>
 
 namespace ricochet {
 
@@ -200,7 +201,11 @@ namespace ricochet {
 	}
 
 	void Map::moveRobot(Pos const& oldPos, Pos const& newPos) {
-
+		// Assume all ok, just swap tiles
+		assert(m_tiles[coord_to_index(oldPos.x, oldPos.y)].getType() == TileType::ROBOT);
+		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY);
+		using std::swap;
+		swap(m_tiles[coord_to_index(oldPos.x, oldPos.y)], m_tiles[coord_to_index(newPos.x, newPos.y)]);
 	}
 
 	size_t Map::coord_to_index(coord x, coord y) const {
@@ -243,6 +248,7 @@ namespace ricochet {
 	}
 
 	Pos Map::nextPos(Pos const& pos, Direction dir, Color color) const {
+		Pos newPos;
 		while (true) {
 			auto dWall = distToWall(pos, dir);
 			auto dObs = distToObstacle(pos, dir, dWall);
@@ -251,7 +257,7 @@ namespace ricochet {
 				// Invalid move
 				throw std::runtime_error("TODO: Handle invalid move");
 			}
-			auto newPos = pos;
+			newPos = pos;
 			switch (dir) {
 				case Direction::NORTH:
 					newPos.y -= dist;
@@ -313,7 +319,7 @@ namespace ricochet {
 				break;
 			}
 		}
-
+		return newPos;
 	}
 
 	Pos Map::movePos(Pos const& pos, Direction dir) const {
