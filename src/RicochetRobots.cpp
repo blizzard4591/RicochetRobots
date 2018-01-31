@@ -14,10 +14,10 @@
 static std::string mapname;
 
 void initLog() {
-	l3pp::Logger::initialize();
-	l3pp::SinkPtr sink = l3pp::StreamSink::create(std::clog);
-	l3pp::Logger::getRootLogger()->addSink(sink);
-	l3pp::Logger::getRootLogger()->setLevel(l3pp::LogLevel::INFO);
+	l3pp::initialize();
+	auto sink = l3pp::basic_stream_sink<wchar_t>::create(std::wclog);
+	l3pp::getRootLogger<wchar_t>()->addSink(sink);
+	l3pp::getRootLogger<wchar_t>()->setLevel(l3pp::LogLevel::INFO);
 }
 
 bool processArgs(int argc, char* argv[]) {
@@ -42,11 +42,11 @@ bool processArgs(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
 	initLog();
 	processArgs(argc, argv);
-	L3PP_LOG_INFO(l3pp::Logger::getRootLogger(), "Starting rrobots, map " << mapname);
+	L3PP_LOG_INFO(l3pp::getRootLogger<wchar_t>(), L"Starting rrobots, map ");// << mapname);
 
 	std::ifstream t(mapname);
 	if (!t) {
-		L3PP_LOG_ERROR(l3pp::Logger::getRootLogger(), "Cannot open map");
+		L3PP_LOG_ERROR(l3pp::getRootLogger<wchar_t>(), L"Cannot open map");
 		return 1;
 	}
 	std::stringstream buffer;
