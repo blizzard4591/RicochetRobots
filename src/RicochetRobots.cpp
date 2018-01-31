@@ -30,9 +30,9 @@ std::string toUtf8(std::wstring const& str) {
 }
 
 bool processArgs(std::vector<std::string>& args) {
-	TAP::VariableArgument<std::string> map("Load map", mapname);
-	TAP::Argument help("Show this &help text");
-	TAP::ArgumentParser parser(help, +map);
+	TAP::variable_argument<std::string> map("Load map", mapname);
+	TAP::argument help("Show this &help text");
+	TAP::argument_parser parser(help, +map);
 	try {
 		parser.parse(args);
 	} catch (TAP::exception& e) {
