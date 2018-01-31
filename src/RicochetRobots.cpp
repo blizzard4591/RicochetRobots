@@ -1,4 +1,4 @@
-﻿// RicochetRobots.cpp : Defines the entry point for the console application.
+// RicochetRobots.cpp : Defines the entry point for the console application.
 //
 
 #include <l3pp.h>
@@ -26,10 +26,10 @@
 static std::string mapname;
 
 void initLog() {
-	l3pp::Logger::initialize();
-	l3pp::SinkPtr sink = l3pp::StreamSink::create(std::clog);
-	l3pp::Logger::getRootLogger()->addSink(sink);
-	l3pp::Logger::getRootLogger()->setLevel(l3pp::LogLevel::INFO);
+	l3pp::initialize();
+	auto sink = l3pp::basic_stream_sink<wchar_t>::create(std::wclog);
+	l3pp::getRootLogger<wchar_t>()->addSink(sink);
+	l3pp::getRootLogger<wchar_t>()->setLevel(l3pp::LogLevel::INFO);
 }
 
 std::string toUtf8(std::wstring const& str) {
@@ -81,11 +81,11 @@ int wmain(int argc, wchar_t* argv[]) {
 	}
 
 	processArgs(args);
-	L3PP_LOG_INFO(l3pp::Logger::getRootLogger(), "Starting rrobots, map " << mapname);
+	L3PP_LOG_INFO(l3pp::getRootLogger<wchar_t>(), L"Starting rrobots, map ");// << mapname);
 
 	std::ifstream t(mapname);
 	if (!t) {
-		L3PP_LOG_ERROR(l3pp::Logger::getRootLogger(), "Cannot open map");
+		L3PP_LOG_ERROR(l3pp::getRootLogger<wchar_t>(), L"Cannot open map");
 		return 1;
 	}
 	std::stringstream buffer;
@@ -93,10 +93,18 @@ int wmain(int argc, wchar_t* argv[]) {
 	ricochet::MapBuilder builder = ricochet::MapBuilder::fromJson(buffer.str());
 
 	ricochet::Map test = builder.toMap();
+	test.insertRobot(ricochet::Robot::BLUE, ricochet::Pos{1, 0});
+	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
+	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{5, 5});
 	std::cout << "Map data: " << std::endl;
 	std::cout << test.toString() << std::endl;
 
-	ricochet::Map map(10, 10);
+	auto next = test.nextPos(ricochet::Pos{1, 0}, ricochet::Direction::SOUTH, ricochet::Color::BLUE);
+
+	test.moveRobot(ricochet::Pos{1, 0}, next);
+
+	std::cout << "Map data: " << std::endl;
+	std::cout << test.toString() << std::endl;
 
 	return 0;
 }
