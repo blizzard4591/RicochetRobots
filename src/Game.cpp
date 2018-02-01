@@ -70,17 +70,15 @@ namespace ricochet {
 				// Cannot make moves after reaching goal
 				return false;
 			}
-			if (!changeDir) {
-				if (m.color == m_currentGoal->color) {
-					if (firstDir) {
-						if (*firstDir != m.dir) {
-							changeDir = true;
-						} else if (m_map.hitsBarrier(Robot{m.color}, m.dir)) {
-							changeDir = true;
-						}
-					} else {
-						firstDir = m.dir;
+			if (!changeDir && m.color == m_currentGoal->color) {
+				if (firstDir) {
+					if (*firstDir != m.dir) {
+						changeDir = true;
+					} else if (m_map.hitsBarrier(Robot{m.color}, m.dir)) {
+						changeDir = true;
 					}
+				} else {
+					firstDir = m.dir;
 				}
 			}
 			try {
