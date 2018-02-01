@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <stdexcept>
 
 namespace ricochet {
@@ -12,6 +13,8 @@ namespace ricochet {
 		SILVER = 5,
 		MIX = 6,
 	};
+
+	static constexpr std::array<Color, 5> RobotColors = {Color::RED, Color::GREEN, Color::BLUE, Color::YELLOW, Color::SILVER};
 
 	using color_t = std::underlying_type_t<Color>;
 

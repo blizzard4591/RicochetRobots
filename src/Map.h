@@ -6,6 +6,7 @@
 
 #include "BarrierType.h"
 #include "Color.h"
+#include "Defines.h"
 #include "Direction.h"
 #include "GoalType.h"
 #include "MapTile.h"
@@ -90,9 +91,9 @@ namespace ricochet {
 
 		bool canTravel(Pos const& pos, Direction dir) const;
 
-		void moveRobot(Pos const& oldPos, Pos const& newPos);
+		void moveRobot(Robot const& r, Pos const& newPos);
 
-		Pos nextPos(Pos const& pos, Direction dir, Color color) const;
+		Pos nextPos(Robot const& robot, Direction dir) const;
 
 		std::string toString() const;
 	private:
@@ -109,6 +110,8 @@ namespace ricochet {
 
 		std::vector<GoalTile> m_goals;
 
+		mutable std::array<Pos, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> m_robots;
+
 		size_t coord_to_index(coord x, coord y) const;
 
 		Pos index_to_coord(std::size_t index) const;
@@ -121,9 +124,7 @@ namespace ricochet {
 
 		Pos movePos(Pos const& pos, Direction dir, coord dist = 1) const;
 
-		size_t moveIndex(size_t index, Direction dir) const;
-
-		coord distToObstacle(Pos const& pos, Direction dir, coord maxDist) const;
+		coord distToRobot(Pos const &pos, Direction dir, coord maxDist) const;
 
 		coord distToWall(Pos const& pos, Direction dir) const;
 

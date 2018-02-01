@@ -196,6 +196,7 @@ namespace ricochet {
 			throw std::runtime_error("insertRobot: Not empty");
 		}
 
+		m_robots[(int)r.color - 1] = pos;
 		m_tiles[coord_to_index(pos.x, pos.y)] = r;
 	}
 
@@ -239,16 +240,22 @@ namespace ricochet {
 
 	bool Map::canTravel(Pos const& pos, Direction dir) const {
 		auto dWall = distToWall(pos, dir);
-		auto dObs = distToObstacle(pos, dir, dWall);
+		auto dObs = distToRobot(pos, dir, dWall);
 		return (dObs > 0u) && (dWall > 0u);
 	}
 
-	void Map::moveRobot(Pos const& oldPos, Pos const& newPos) {
+	void Map::moveRobot(Robot const& r,Pos const& newPos) {
 		// Assume all ok, just swap tiles
+		auto& oldPos = m_robots[(int)r.color - 1];
+		if (newPos == oldPos) {
+			// Accept cycles (can happen due to barriers)
+			return;
+		}
 		assert(m_tiles[coord_to_index(oldPos.x, oldPos.y)].getType() == TileType::ROBOT);
 		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY);
 		using std::swap;
 		swap(m_tiles[coord_to_index(oldPos.x, oldPos.y)], m_tiles[coord_to_index(newPos.x, newPos.y)]);
+		m_robots[(int)r.color - 1] = newPos;
 	}
 
 	size_t Map::coord_to_index(coord x, coord y) const {
@@ -290,11 +297,24 @@ namespace ricochet {
 		assert(m_westDist.size() == (m_width * m_height));
 	}
 
-	Pos Map::nextPos(Pos const& pos, Direction dir, Color color) const {
-		Pos newPos = pos;
+	struct PosHolder {
+		Pos& pos;
+		Pos old;
+		explicit PosHolder(Pos& pos) : pos(pos), old(pos) {
+			pos = Pos{std::numeric_limits<coord>::max(), std::numeric_limits<coord>::max()};
+		}
+		~PosHolder() {
+			pos = old;
+		}
+	};
+
+	Pos Map::nextPos(Robot const& robot, Direction dir) const {
+		Pos newPos = m_robots[(int)robot.color - 1];
+		PosHolder holder(m_robots[(int)robot.color - 1]);
+
 		while (true) {
 			auto dWall = distToWall(newPos, dir);
-			auto dObs = distToObstacle(newPos, dir, dWall);
+			auto dObs = dWall ? distToRobot(newPos, dir, dWall) : dWall;
 			auto dist = std::min(dObs, dWall);
 			if (dist == 0) {
 				// Invalid move
@@ -309,7 +329,7 @@ namespace ricochet {
 				// If barrier, change direction if required,
 				// update position
 				auto& barrier = curTile.barrier();
-				if (barrier.color != color) {
+				if (barrier.color != robot.color) {
 					bool fwd = barrier.alignment == BarrierType::FWD;
 					switch (dir) {
 						case Direction::NORTH:
@@ -365,37 +385,38 @@ namespace ricochet {
 		}
 	}
 
-	size_t Map::moveIndex(size_t index, Direction dir) const {
-		switch (dir) {
-			case Direction::NORTH:
-				return index - m_width;
-			case Direction::EAST:
-				return index + 1;
-			case Direction::SOUTH:
-				return index + m_width;
-			case Direction::WEST:
-				return index - 1;
-			default:
-				throw std::runtime_error("Invalid Direction value passed to moveIndex!");
-		}
-	}
-
-	coord Map::distToObstacle(Pos const& pos, Direction dir, coord maxDist) const {
-		coord dist = 0;
-
-		auto idx = coord_to_index(pos.x, pos.y);
-		idx = moveIndex(idx, dir);
-		while (dist < maxDist) {
-			if (m_tiles[idx].getType() != TileType::EMPTY) {
-				// Obstacle
-				if (m_tiles[idx].getType() == TileType::BARRIER) {
-					// Move ontop of barrier
-					return dist + 1;
-				}
-				return dist;
+	coord Map::distToRobot(Pos const &pos, Direction dir, coord maxDist) const {
+		for (auto const& rpos: m_robots) {
+			switch (dir) {
+				case Direction::NORTH:
+					if (pos.x == rpos.x) {
+						if (rpos.y < pos.y) {
+							maxDist = std::min(maxDist, pos.y - rpos.y - 1);
+						}
+					}
+					break;
+				case Direction::SOUTH:
+					if (pos.x == rpos.x) {
+						if (pos.y < rpos.y) {
+							maxDist = std::min(maxDist, rpos.y - pos.y - 1);
+						}
+					}
+					break;
+				case Direction::EAST:
+					if (pos.y == rpos.y) {
+						if (pos.x < rpos.x) {
+							maxDist = std::min(maxDist, rpos.y - pos.y - 1);
+						}
+					}
+					break;
+				case Direction::WEST:
+					if (pos.y == rpos.y) {
+						if (rpos.x < pos.x) {
+							maxDist = std::min(maxDist, pos.y - rpos.y - 1);
+						}
+					}
+					break;
 			}
-			idx = moveIndex(idx, dir);
-			++dist;
 		}
 
 		return maxDist;
