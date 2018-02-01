@@ -43,26 +43,53 @@ namespace ricochet {
 		return false;
 	}
 
+	struct StackMgr {
+		Map& map;
+
+		explicit StackMgr(Map& map) : map(map) {
+			map.push();
+		}
+		~StackMgr() {
+			map.popAll();
+		}
+	};
+
 	bool Game::validMove(MoveSequence const& moveSeq) const {
 		if (moveSeq.empty()) {
 			return false;
 		}
 
-		// Must ricochet/turn at least once
+		StackMgr stackMgr(m_map);
+
 		unsigned long dx = 0, dy = 0;
-		Pos const* p_prev = &(moveSeq[0].pos);
+		Pos p_prev = const_cast<Map const&>(m_map).getRobotPos(m_currentGoal->color);
+		Pos pos;
+		bool onGoal = false;
 		for(auto const& m: moveSeq) {
-			dx += std::abs((long)p_prev->x - (long)m.pos.x);
-			dy += std::abs((long)p_prev->y - (long)m.pos.y);
-			p_prev = &m.pos;
-			if (dx != 0 && dy != 0) {
-				break;
+			if (onGoal) {
+				// Cannot make moves after reaching goal
+				return false;
+			}
+			try {
+				pos = m_map.nextPos(Robot{m.color}, m.dir);
+			} catch (std::runtime_error&) {
+				// Invalid move
+				return false;
+			}
+			if (m.color == m_currentGoal->color) {
+				if (pos == m_currentGoal->pos) {
+					onGoal = true;
+				}
+				dx += std::abs((long) p_prev.x - (long) pos.x);
+				dy += std::abs((long) p_prev.y - (long) pos.y);
+				p_prev = pos;
+				if (dx != 0 && dy != 0) {
+					break;
+				}
 			}
 		}
-		if (dx == 0 || dy == 0) {
-			return false;
-		}
 
-		return false;
+		// Goal robot must ricochet/turn at least once
+		return !(dx == 0 || dy == 0);
 	}
 }

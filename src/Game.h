@@ -8,7 +8,7 @@
 namespace ricochet {
 
 	class Game {
-		Map m_map;
+		mutable Map m_map;
 
 		std::vector<Goal> m_remainingGoals;
 		std::optional<Goal> m_currentGoal;

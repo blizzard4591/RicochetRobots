@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Position.h"
 #include "Color.h"
+#include "Direction.h"
 
 #include <vector>
 
@@ -9,7 +9,7 @@ namespace ricochet {
 
 	struct Move {
 		Color color;
-		Pos pos;
+		Direction dir;
 	};
 
 	typedef std::vector<Move> MoveSequence;
