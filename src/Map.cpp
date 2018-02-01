@@ -426,10 +426,9 @@ namespace ricochet {
 			case Direction::NORTH:
 				for (coord y = pos.y, dist = 0; y < m_height; dist++, y++) {
 					const auto idx = coord_to_index(pos.x, y);
-					if (m_northDist[idx] == 0) {
+					if (m_northDist[idx] <= dist) {
 						break;
 					}
-					assert(dist <= m_northDist[idx]);
 					if (!barrier || dist != 0) {
 						m_northDist[idx] = dist;
 					}
@@ -438,10 +437,9 @@ namespace ricochet {
 			case Direction::EAST:
 				for (coord x = pos.x, dist = 0; x <= pos.x; dist++, x--) {
 					const auto idx = coord_to_index(x, pos.y);
-					if (m_eastDist[idx] == 0) {
+					if (m_eastDist[idx] <= dist) {
 						break;
 					}
-					assert(dist <= m_eastDist[coord_to_index(x, pos.y)]);
 					if (!barrier || dist != 0) {
 						m_eastDist[idx] = dist;
 					}
@@ -450,11 +448,10 @@ namespace ricochet {
 			case Direction::SOUTH:
 				for (coord y = pos.y, dist = 0; y <= pos.y; y--, dist++) {
 					const auto idx = coord_to_index(pos.x, y);
-					if (m_southDist[idx] == 0) {
+					if (m_southDist[idx] <= dist) {
 						break;
 					}
 
-					assert(dist <= m_southDist[idx]);
 					if (!barrier || dist != 0) {
 						m_southDist[idx] = dist;
 					}
@@ -463,10 +460,9 @@ namespace ricochet {
 			case Direction::WEST:
 				for (coord x = pos.x, dist = 0; x < m_width; x++, dist++) {
 					const auto idx = coord_to_index(x, pos.y);
-					if (m_westDist[idx] == 0) {
+					if (m_westDist[idx] <= dist) {
 						break;
 					}
-					assert(dist <= m_westDist[coord_to_index(x, pos.y)]);
 					if (!barrier || dist != 0) {
 						m_westDist[idx] = dist;
 					}

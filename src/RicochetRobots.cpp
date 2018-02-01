@@ -99,15 +99,17 @@ int program(std::vector<std::string>& args) {
 
 	ricochet::Map test = builder.toMap();
 
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
+
 	test.insertRobot(ricochet::Robot::BLUE, ricochet::Pos{1, 0});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{2, 5});
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << test.toString());
 
 	auto next = test.nextPos(ricochet::Pos{1, 0}, ricochet::Direction::SOUTH, ricochet::Color::BLUE);
 	test.moveRobot(ricochet::Pos{1, 0}, next);
 
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << test.toString());
 
 	return 0;
 }
