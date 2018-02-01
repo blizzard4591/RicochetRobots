@@ -109,7 +109,8 @@ int program(std::vector<std::string>& args) {
 	//test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{2, 0});
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << test.toString());
 
-	auto next = test.nextPos(rbot, ricochet::Direction::SOUTH);
+	auto dir = ricochet::Direction::SOUTH;
+	auto next = test.nextPos(rbot, dir);
 	test.push();
 	test.moveRobot(rbot, next);
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << test.toString());

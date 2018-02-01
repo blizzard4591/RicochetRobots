@@ -60,31 +60,20 @@ namespace ricochet {
 			return false;
 		}
 
-		Direction lastDir = moveSeq.back().dir;
-		Color lastColor = moveSeq.back().color;
-
-		/*if (m_currentGoal->color != Color::MIX && lastColor != m_currentGoal->color) {
-			// Last move is superfluous (technically not invalid)
-			return false;
-		}*/
-
 		StackMgr stackMgr(m_map);
 
-
-		Pos pos;
-		bool changeDir = false;
+		// Same as moveSeq, with Direction updated to take barriers into account
+		MoveSequence targetMoves = moveSeq;
+		Move goalMove;
 		bool onGoal = false;
-		for(auto const& m: moveSeq) {
+		for(auto& m: targetMoves) {
 			if (const_cast<Map const&>(m_map).getRobotPos(m.color) == m_currentGoal->pos) {
 				// Leaving the goal (or staying away)
 				onGoal = false;
 			}
+			Pos pos;
 			try {
-				Direction moveDir = m.dir;
-				pos = m_map.nextPos(Robot{m.color}, moveDir);
-				if (m.color == lastColor && moveDir != lastDir) {
-					changeDir = true;
-				}
+				pos = m_map.nextPos(Robot{m.color}, m.dir);
 			} catch (std::runtime_error&) {
 				// Invalid move
 				return false;
@@ -93,20 +82,33 @@ namespace ricochet {
 				// Goal occupied. More moves may follow, for example to
 				// get changeDir to be true
 				onGoal = true;
+				goalMove = m;
 			}
 		}
 
-		if (!onGoal || !changeDir) {
-			// Goal not occupied, or has not ricocheted
+		if (!onGoal) {
+			// Goal not occupied
 			return false;
 		}
+
+		bool changeDir = false;
+		for(auto const& m: targetMoves) {
+			if (m.color == goalMove.color && m.dir != goalMove.dir && m.dir != oppDir(goalMove.dir)) {
+				changeDir = true;
+				break;
+			}
+		}
+		if (!changeDir) {
+			// Robot that moves to goal must ricochet at least once
+			return false;
+		}
+
 
 		if (!validateOnly) {
 			// Apply map state, stackMgr undo is noop
 			m_map.apply();
 		}
 
-		// Goal robot must ricochet/turn at least once
 		return true;
 	}
 }
