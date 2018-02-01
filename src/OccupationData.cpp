@@ -12,12 +12,12 @@ namespace ricochet {
 	}
 
 	Position const &OccupationData::getRobotPosition(Robot const &robot) const {
-		return m_positions.at(static_cast<size_t>(robot));
+		return m_positions.at(static_cast<size_t>(robot.color));
 	}
 
 	OccupationData OccupationData::moveRobot(Robot const &robot, Position const &newPosition) const {
 		std::array<Position, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> positions = m_positions;
-		positions.at(static_cast<size_t>(robot)) = newPosition;
+		positions.at(static_cast<size_t>(robot.color)) = newPosition;
 
 		return OccupationData(positions);
 	}

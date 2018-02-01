@@ -101,7 +101,7 @@ int program(std::vector<std::string>& args) {
 
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
 
-	test.insertRobot(ricochet::Robot::BLUE, ricochet::Pos{1, 0});
+	test.insertRobot(ricochet::Robot{ricochet::Color::BLUE}, ricochet::Pos{1, 0});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{2, 5});
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << test.toString());

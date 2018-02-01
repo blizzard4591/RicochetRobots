@@ -1,13 +1,11 @@
 #pragma once
 
+#include "Color.h"
+
 namespace ricochet {
 
-	enum class Robot {
-		RED,
-		GREEN,
-		BLUE,
-		YELLOW,
-		SILVER
+	struct Robot {
+		Color color;
 	};
 
 }
