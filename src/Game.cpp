@@ -60,12 +60,19 @@ namespace ricochet {
 			return false;
 		}
 
-		StackMgr stackMgr(m_map);
-
-		bool changeDir = false;
 		Direction lastDir = moveSeq.back().dir;
 		Color lastColor = moveSeq.back().color;
+
+		/*if (m_currentGoal->color != Color::MIX && lastColor != m_currentGoal->color) {
+			// Last move is superfluous (technically not invalid)
+			return false;
+		}*/
+
+		StackMgr stackMgr(m_map);
+
+
 		Pos pos;
+		bool changeDir = false;
 		bool onGoal = false;
 		for(auto const& m: moveSeq) {
 			if (const_cast<Map const&>(m_map).getRobotPos(m.color) == m_currentGoal->pos) {
@@ -83,12 +90,14 @@ namespace ricochet {
 				return false;
 			}
 			if (pos == m_currentGoal->pos && (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX)) {
+				// Goal occupied. More moves may follow, for example to
+				// get changeDir to be true
 				onGoal = true;
 			}
 		}
 
-		if (!onGoal || (m_currentGoal->color != Color::MIX && lastColor != m_currentGoal->color)) {
-			// Goal not occupied, or last move was superfluous
+		if (!onGoal) {
+			// Goal not occupied
 			return false;
 		}
 
