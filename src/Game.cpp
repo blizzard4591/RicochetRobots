@@ -96,8 +96,8 @@ namespace ricochet {
 			}
 		}
 
-		if (!onGoal) {
-			// Goal not occupied
+		if (!onGoal || !changeDir) {
+			// Goal not occupied, or has not ricocheted
 			return false;
 		}
 
@@ -107,6 +107,6 @@ namespace ricochet {
 		}
 
 		// Goal robot must ricochet/turn at least once
-		return changeDir;
+		return true;
 	}
 }
