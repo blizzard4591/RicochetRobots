@@ -55,14 +55,16 @@ namespace ricochet {
 	};
 
 	bool Game::doMove(MoveSequence const& moveSeq, bool validateOnly) const {
-		if (moveSeq.empty()) {
+		if (moveSeq.size() <= 1) {
+			// Needs more than one move
 			return false;
 		}
 
 		StackMgr stackMgr(m_map);
 
 		bool changeDir = false;
-		std::optional<Direction> firstDir;
+		Direction lastDir = moveSeq.back().dir;
+		Color lastColor = moveSeq.back().color;
 		Pos pos;
 		bool onGoal = false;
 		for(auto const& m: moveSeq) {
@@ -70,27 +72,18 @@ namespace ricochet {
 				// Cannot make moves after reaching goal
 				return false;
 			}
-			if (!changeDir && (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX)) {
-				if (firstDir) {
-					if (*firstDir != m.dir) {
-						changeDir = true;
-					} else if (m_map.hitsBarrier(Robot{m.color}, m.dir)) {
-						changeDir = true;
-					}
-				} else {
-					firstDir = m.dir;
-				}
-			}
 			try {
-				pos = m_map.nextPos(Robot{m.color}, m.dir);
+				Direction moveDir = m.dir;
+				pos = m_map.nextPos(Robot{m.color}, moveDir);
+				if (m.color == lastColor && moveDir != lastDir) {
+					changeDir = true;
+				}
 			} catch (std::runtime_error&) {
 				// Invalid move
 				return false;
 			}
-			if (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX) {
-				if (pos == m_currentGoal->pos) {
-					onGoal = true;
-				}
+			if (pos == m_currentGoal->pos && (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX)) {
+				onGoal = true;
 			}
 		}
 

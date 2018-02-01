@@ -317,7 +317,7 @@ namespace ricochet {
 		}
 	};
 
-	Pos Map::nextPos(Robot const& robot, Direction dir) const {
+	Pos Map::nextPos(Robot const& robot, Direction& dir) const {
 		Pos newPos = getRobotPos(robot.color);
 		PosHolder holder(m_robotStack[0][(int)robot.color - 1]);
 
@@ -377,25 +377,6 @@ namespace ricochet {
 			}
 		}
 		return newPos;
-	}
-
-	bool Map::hitsBarrier(Robot const& robot, Direction dir) const {
-		Pos rPos = getRobotPos(robot.color);
-		while (true) {
-			auto dWall = distToWall(rPos, dir);
-			rPos = movePos(rPos, dir, dWall);
-
-			auto& curTile = getTile(rPos);
-			if (curTile.getType() == TileType::BARRIER) {
-				auto& barrier = curTile.barrier();
-				if (barrier.color != robot.color) {
-					return true;
-				}
-				// Continue otherwise
-			} else {
-				return false;
-			}
-		}
 	}
 
 	Pos Map::movePos(Pos const& pos, Direction dir, coord dist) const {

@@ -80,9 +80,7 @@ namespace ricochet {
 
 		void moveRobot(Robot const& r, Pos const& newPos);
 
-		Pos nextPos(Robot const& robot, Direction dir) const;
-
-		bool hitsBarrier(Robot const& robot, Direction dir) const;
+		Pos nextPos(Robot const& robot, Direction& dir) const;
 
 		std::string toString() const;
 
