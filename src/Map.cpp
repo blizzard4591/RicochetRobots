@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
+#include <optional>
 
 namespace ricochet {
 
@@ -12,8 +13,8 @@ namespace ricochet {
 			return TileType::EMPTY;
 		} else if (std::holds_alternative<Barrier>(m_data)) {
 			return TileType::BARRIER;
-		} else if (std::holds_alternative<Robot>(m_data)) {
-			return TileType::ROBOT;
+		} else if (std::holds_alternative<GoalTile>(m_data)) {
+			return TileType::GOAL;
 		} else if (std::holds_alternative<Inaccessible>(m_data)) {
 			return TileType::INACCESSIBLE;
 		} else {
@@ -25,8 +26,8 @@ namespace ricochet {
 		return std::get<Barrier>(m_data);
 	}
 
-	Robot const& Tile::robot() const {
-		return std::get<Robot>(m_data);
+	GoalTile const& Tile::goal() const {
+		return std::get<GoalTile>(m_data);
 	}
 
 	Map::Map(coord width, coord height) : m_width(width), m_height(height) {
@@ -65,6 +66,14 @@ namespace ricochet {
 				Tile const& tile = getTile(pos);
 				TileType const tileType = tile.getType();
 
+				std::optional<Color> curRobot;
+				size_t i = 0;
+				for (auto r_it = m_robots.begin(); r_it != m_robots.end(); r_it++, i++) {
+					if (*r_it == pos) {
+						curRobot = static_cast<Color>(i+1);
+					}
+				}
+
 				bool const canGoUp = canTravel(pos, Direction::NORTH);
 				bool const canGoDown = canTravel(pos, Direction::SOUTH);
 				bool const canGoLeft = canTravel(pos, Direction::WEST);
@@ -96,7 +105,11 @@ namespace ricochet {
 
 				switch (tileType) {
 					case TileType::EMPTY:
-						lines.at(lineIndex + 1u).append(u8" ");
+						if (curRobot) {
+							lines.at(lineIndex + 1u).append(u8"R");
+						} else {
+							lines.at(lineIndex + 1u).append(u8" ");
+						}
 						break;
 					case TileType::BARRIER:
 					{
@@ -110,10 +123,14 @@ namespace ricochet {
 						}
 						break;
 					}
-					case TileType::ROBOT:
+					case TileType::GOAL:
 					{
-						Robot const& robot = tile.robot();
-						lines.at(lineIndex + 1u).append(u8"R");
+						GoalTile const& g = tile.goal();
+						if (curRobot) {
+							lines.at(lineIndex + 1u).append(u8"ⓡ");
+						} else {
+							lines.at(lineIndex + 1u).append(u8"◯");
+						}
 						break;
 					}
 					case TileType::INACCESSIBLE:
@@ -197,17 +214,13 @@ namespace ricochet {
 		}
 
 		m_robots[(int)r.color - 1] = pos;
-		m_tiles[coord_to_index(pos.x, pos.y)] = r;
 	}
 
-	void Map::insertGoal(Goal const& g, Pos const& pos) {
-		if (!posValid(pos)) {
+	void Map::insertGoal(Goal const& g) {
+		if (!posValid(g.pos)) {
 			throw std::range_error("insertGoal: Invalid pos");
 		}
-		if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
-			throw std::runtime_error("insertGoal: Not empty");
-		}
-		m_goals[coord_to_index(pos.x, pos.y)] = g;
+		m_goals.push_back(g);
 	}
 
 	void Map::insertInaccessible(Pos const& pos) {
@@ -245,17 +258,10 @@ namespace ricochet {
 	}
 
 	void Map::moveRobot(Robot const& r,Pos const& newPos) {
-		// Assume all ok, just swap tiles
-		auto& oldPos = m_robots[(int)r.color - 1];
-		if (newPos == oldPos) {
-			// Accept cycles (can happen due to barriers)
-			return;
-		}
-		assert(m_tiles[coord_to_index(oldPos.x, oldPos.y)].getType() == TileType::ROBOT);
-		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY);
-		using std::swap;
-		swap(m_tiles[coord_to_index(oldPos.x, oldPos.y)], m_tiles[coord_to_index(newPos.x, newPos.y)]);
-		oldPos = newPos;
+		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY ||
+			   m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::GOAL);
+		// Assume all ok
+		m_robots[(int)r.color - 1] = newPos;
 	}
 
 	size_t Map::coord_to_index(coord x, coord y) const {

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Color.h"
+#include "Position.h"
+
 #include <stdexcept>
 
 namespace ricochet {
@@ -34,5 +37,11 @@ namespace ricochet {
 	inline goaltype_t toInt(GoalType g) {
 		return static_cast<std::underlying_type_t<GoalType>>(g);
 	}
+
+	struct Goal {
+		GoalType type;
+		Color color;
+		Pos pos;
+	};
 
 }

@@ -29,7 +29,7 @@ set(ricochet_files
 	src/ReachabilityAnalysis.h 
 	src/Robot.h
 	src/TileOccupation.h
-)
+        src/MoveSequence.cpp src/MoveSequence.h src/Game.cpp src/Game.h src/Goal.h)
 
 add_library(ricochet ${ricochet_files})
 SET_TARGET_PROPERTIES(ricochet PROPERTIES LINKER_LANGUAGE CXX)

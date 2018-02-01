@@ -12,7 +12,7 @@ using json = nlohmann::json;
 #include "BarrierType.h"
 #include "Color.h"
 #include "Direction.h"
-#include "GoalType.h"
+#include "Goal.h"
 #include "Map.h"
 #include "ObstacleType.h"
 #include "Position.h"

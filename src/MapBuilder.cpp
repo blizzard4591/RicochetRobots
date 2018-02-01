@@ -212,7 +212,7 @@ namespace ricochet {
 			map.insertBarrier(Barrier{b.barrierType, b.barrierColor}, b.position);
 		}
 		for(auto const& g: m_goals) {
-			map.insertGoal(Goal{g.goalType, g.goalColor}, g.position);
+			map.insertGoal(Goal{g.goalType, g.goalColor, g.position});
 		}
 		return map;
 	}
