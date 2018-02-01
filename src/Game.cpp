@@ -54,21 +54,34 @@ namespace ricochet {
 		}
 	};
 
-	bool Game::validMove(MoveSequence const& moveSeq) const {
+	bool Game::doMove(MoveSequence const& moveSeq, bool validateOnly) const {
 		if (moveSeq.empty()) {
 			return false;
 		}
 
 		StackMgr stackMgr(m_map);
 
-		unsigned long dx = 0, dy = 0;
-		Pos p_prev = const_cast<Map const&>(m_map).getRobotPos(m_currentGoal->color);
+		bool changeDir = false;
+		std::optional<Direction> firstDir;
 		Pos pos;
 		bool onGoal = false;
 		for(auto const& m: moveSeq) {
 			if (onGoal) {
 				// Cannot make moves after reaching goal
 				return false;
+			}
+			if (!changeDir) {
+				if (m.color == m_currentGoal->color) {
+					if (firstDir) {
+						if (*firstDir != m.dir) {
+							changeDir = true;
+						} else if (m_map.hitsBarrier(Robot{m.color}, m.dir)) {
+							changeDir = true;
+						}
+					} else {
+						firstDir = m.dir;
+					}
+				}
 			}
 			try {
 				pos = m_map.nextPos(Robot{m.color}, m.dir);
@@ -80,16 +93,15 @@ namespace ricochet {
 				if (pos == m_currentGoal->pos) {
 					onGoal = true;
 				}
-				dx += std::abs((long) p_prev.x - (long) pos.x);
-				dy += std::abs((long) p_prev.y - (long) pos.y);
-				p_prev = pos;
-				if (dx != 0 && dy != 0) {
-					break;
-				}
 			}
 		}
 
+		if (!validateOnly) {
+			// Apply map state, stackMgr undo is noop
+			m_map.apply();
+		}
+
 		// Goal robot must ricochet/turn at least once
-		return !(dx == 0 || dy == 0);
+		return changeDir;
 	}
 }

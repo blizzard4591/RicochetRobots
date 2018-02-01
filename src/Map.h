@@ -82,6 +82,8 @@ namespace ricochet {
 
 		Pos nextPos(Robot const& robot, Direction dir) const;
 
+		bool hitsBarrier(Robot const& robot, Direction dir) const;
+
 		std::string toString() const;
 
 		Pos const& getRobotPos(Color c) const {
@@ -104,6 +106,10 @@ namespace ricochet {
 				robots() = *(m_robotStack.begin() + 1);
 				m_robotStack.erase(m_robotStack.begin() + 1, m_robotStack.end());
 			}
+		}
+
+		void apply() {
+			m_robotStack.erase(m_robotStack.begin() + 1, m_robotStack.end());
 		}
 	private:
 		coord m_width;

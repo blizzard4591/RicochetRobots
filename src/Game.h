@@ -43,7 +43,19 @@ namespace ricochet {
 		 */
 		bool cancelGoal();
 
-		bool validMove(MoveSequence const& moveSeq) const;
+		/**
+		 * Execute given sequence of moves. If not valid, will return false
+		 * and restore the map state. Otherwise, updates map state on if
+		 * validateOnly is false.
+		 * A move sequence is valid if at the end (and only the end)
+		 * it moves the robot for the active goal on top of it with
+		 * at least one 90 degree change in direction.
+		 * @param moveSeq Sequence of moves to perform
+		 * @param validateOnly If true only check if move sequence is valid,
+		 * otherwise update state if it is valid
+		 * @return true if the sequence is valid
+		 */
+		bool doMove(MoveSequence const& moveSeq, bool validateOnly) const;
 	};
 
 }
