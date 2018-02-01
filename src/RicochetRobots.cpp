@@ -13,13 +13,45 @@
 #include "MapBuilder.h"
 #include "Map.h"
 
+#if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
+#include <fcntl.h>
+#include <io.h>
+#endif
+
 static std::string mapname;
+
+class wide_stream_sink: public l3pp::basic_sink<char> {
+	/// Output stream.
+	mutable std::unique_ptr<std::wostream> os;
+
+	explicit wide_stream_sink(std::wostream& _os) :
+			os(new std::wostream(_os.rdbuf())) {}
+
+public:
+	void log(l3pp::basic_log_entry<char> const& context) const override {
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::wstring wstr = converter.from_bytes(this->formatMessage(context));
+		*os << wstr << std::flush;
+	}
+
+	/**
+	 * Create a StreamSink from some output stream.
+     * @param os Output stream.
+     */
+	static auto create(std::wostream& os) {
+		return l3pp::ptr<wide_stream_sink>(new wide_stream_sink(os));
+	}
+};
 
 void initLog() {
 	l3pp::initialize();
-	auto sink = l3pp::basic_stream_sink<wchar_t>::create(std::wclog);
-	l3pp::getRootLogger<wchar_t>()->addSink(sink);
-	l3pp::getRootLogger<wchar_t>()->setLevel(l3pp::LogLevel::INFO);
+#if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
+	auto sink = l3pp::wide_stream_sink::create(std::wclog);
+#else
+	auto sink = l3pp::stream_sink::create(std::clog);
+#endif
+	l3pp::getRootLogger()->addSink(sink);
+	l3pp::getRootLogger()->setLevel(l3pp::LogLevel::INFO);
 }
 
 std::string toUtf8(std::wstring const& str) {
@@ -47,24 +79,13 @@ bool processArgs(std::vector<std::string>& args) {
 	return true;
 }
 
-
-int wmain(int argc, wchar_t* argv[]) {
-	std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
-	std::wcout.imbue(loc);
-
-	initLog();
-	
-	std::vector<std::string> args;
-	for (int i = 1; i < argc; i++) {
-		args.emplace_back(toUtf8(argv[i]));
-	}
-
+int program(std::vector<std::string>& args) {
 	processArgs(args);
-	L3PP_LOG_INFO(l3pp::getRootLogger<wchar_t>(), L"Starting rrobots, map ");// << mapname);
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Starting rrobots, map " << mapname);
 
 	std::ifstream t(mapname);
 	if (!t) {
-		L3PP_LOG_ERROR(l3pp::getRootLogger<wchar_t>(), L"Cannot open map");
+		L3PP_LOG_ERROR(l3pp::getRootLogger(), "Cannot open map");
 		return 1;
 	}
 	std::stringstream buffer;
@@ -76,14 +97,43 @@ int wmain(int argc, wchar_t* argv[]) {
 	test.insertRobot(ricochet::Robot::BLUE, ricochet::Pos{1, 0});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{5, 5});
-	std::wcout << L"Map data: " << std::endl;
-	std::wcout.imbue(loc);
-	std::wcout << test.toString() << std::endl;
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
 
 	auto next = test.nextPos(ricochet::Pos{1, 0}, ricochet::Direction::SOUTH, ricochet::Color::BLUE);
-
 	test.moveRobot(ricochet::Pos{1, 0}, next);
+
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
 
 	return 0;
 }
+#if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
 
+int wmain(int argc, wchar_t* argv[]) {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+
+	initLog();
+
+	std::vector<std::string> args;
+	for (int i = 1; i < argc; i++) {
+		args.emplace_back(toUtf8(argv[i]));
+	}
+
+	return program(args);
+}
+
+#else
+
+int main(int argc, char* argv[]) {
+	setlocale(LC_ALL, "");
+
+	initLog();
+
+	std::vector<std::string> args;
+	for (int i = 1; i < argc; i++) {
+		args.emplace_back(argv[i]);
+	}
+
+	return program(args);
+}
+
+#endif

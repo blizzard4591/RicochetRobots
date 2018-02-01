@@ -48,10 +48,10 @@ namespace ricochet {
 		return m_height;
 	}
 
-	std::wstring Map::toString() const {
-		std::wstringstream ss;
+	std::string Map::toString() const {
+		std::stringstream ss;
 
-		std::vector<std::wstring> lines;
+		std::vector<std::string> lines;
 		lines.resize(m_height * 3u);
 		for (auto& line: lines) {
 			line.reserve(m_width * 3u);
@@ -70,48 +70,48 @@ namespace ricochet {
 
 				size_t const lineIndex = y * 3u;
 				if (!canGoUp) {
-					//lines.at(lineIndex).append(L"┌─┐");
-					lines.at(lineIndex).append(L"\u250C\u2500\u2510");
+					//lines.at(lineIndex).append("┌─┐");
+					lines.at(lineIndex).append("\u250C\u2500\u2510");
 				} else {
-					//lines.at(lineIndex).append(L"┌ ┐");
-					lines.at(lineIndex).append(L"\u250C \u2510");
+					//lines.at(lineIndex).append("┌ ┐");
+					lines.at(lineIndex).append("\u250C \u2510");
 				}
 
 				if (!canGoDown) {
-					//lines.at(lineIndex + 2u).append(L"└─┘");
-					lines.at(lineIndex + 2u).append(L"\u2514\u2500\u2518");
+					//lines.at(lineIndex + 2u).append("└─┘");
+					lines.at(lineIndex + 2u).append("\u2514\u2500\u2518");
 				} else {
-					//lines.at(lineIndex + 2u).append(L"└ ┘");
-					lines.at(lineIndex + 2u).append(L"\u2514 \u2518");
+					//lines.at(lineIndex + 2u).append("└ ┘");
+					lines.at(lineIndex + 2u).append("\u2514 \u2518");
 				}
 
 				if (!canGoLeft) {
-					//lines.at(lineIndex + 1u).append(L"│");
-					lines.at(lineIndex + 1u).append(L"\u2502");
+					//lines.at(lineIndex + 1u).append("│");
+					lines.at(lineIndex + 1u).append("\u2502");
 				} else {
-					lines.at(lineIndex + 1u).append(L" ");
+					lines.at(lineIndex + 1u).append(" ");
 				}
 
 				switch (tileType) {
 					case TileType::EMPTY:
-						lines.at(lineIndex + 1u).append(L" ");
+						lines.at(lineIndex + 1u).append(" ");
 						break;
 					case TileType::BARRIER:
 					{
 						Barrier const& barrier = tile.barrier();
 						if (barrier.alignment == BarrierType::FWD) {
-							//lines.at(lineIndex + 1u).append(L"╱");
-							lines.at(lineIndex + 1u).append(L"\u2571");
+							//lines.at(lineIndex + 1u).append("╱");
+							lines.at(lineIndex + 1u).append("\u2571");
 						} else {
-							//lines.at(lineIndex + 1u).append(L"╲");
-							lines.at(lineIndex + 1u).append(L"\u2572");
+							//lines.at(lineIndex + 1u).append("╲");
+							lines.at(lineIndex + 1u).append("\u2572");
 						}
 						break;
 					}
 					case TileType::ROBOT:
 					{
 						Robot const& robot = tile.robot();
-						lines.at(lineIndex + 1u).append(L"R");
+						lines.at(lineIndex + 1u).append("R");
 						break;
 					}
 					default:
@@ -119,10 +119,10 @@ namespace ricochet {
 				}
 
 				if (!canGoRight) {
-					//lines.at(lineIndex + 1u).append(L"│");
-					lines.at(lineIndex + 1u).append(L"\u2502");
+					//lines.at(lineIndex + 1u).append("│");
+					lines.at(lineIndex + 1u).append("\u2502");
 				} else {
-					lines.at(lineIndex + 1u).append(L" ");
+					lines.at(lineIndex + 1u).append(" ");
 				}
 			}
 		}

@@ -89,7 +89,7 @@ namespace ricochet {
 
 		Pos nextPos(Pos const& pos, Direction dir, Color color) const;
 
-		std::wstring toString() const;
+		std::string toString() const;
 	private:
 		coord m_width;
 		coord m_height;
