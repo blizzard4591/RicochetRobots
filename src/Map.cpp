@@ -153,15 +153,15 @@ namespace ricochet {
 		}
 		// Insert both walls, accept single failure
 		try {
-			insertSemiWall(pos, dir);
+			insertSemiWall(pos, dir, false);
 			try {
-				insertSemiWall(pos2, dir2);
+				insertSemiWall(pos2, dir2, false);
 			} catch (std::runtime_error&) {
 				// Ignore
 			}
 		} catch (std::runtime_error&) {
 			// Try other position
-			insertSemiWall(pos2, dir2);
+			insertSemiWall(pos2, dir2, false);
 		}
 	}
 
@@ -174,6 +174,11 @@ namespace ricochet {
 		}
 
 		m_tiles[coord_to_index(pos.x, pos.y)] = b;
+
+		insertSemiWall(pos, Direction::NORTH, true);
+		insertSemiWall(pos, Direction::EAST, true);
+		insertSemiWall(pos, Direction::SOUTH, true);
+		insertSemiWall(pos, Direction::WEST, true);
 	}
 
 	void Map::insertRobot(Robot const& r, Pos const& pos) {
@@ -382,7 +387,7 @@ namespace ricochet {
 		}
 	}
 
-	void Map::insertSemiWall(Pos const& pos, Direction dir) {
+	void Map::insertSemiWall(Pos const& pos, Direction dir, bool barrier) {
 		if (!posValid(pos)) {
 			throw std::range_error("insertWall: Invalid pos");
 		}
@@ -395,7 +400,9 @@ namespace ricochet {
 						break;
 					}
 					assert(dist <= m_northDist[idx]);
-					m_northDist[idx] = dist;
+					if (!barrier || dist != 0) {
+						m_northDist[idx] = dist;
+					}
 				}
 				break;
 			case Direction::EAST:
@@ -405,7 +412,9 @@ namespace ricochet {
 						break;
 					}
 					assert(dist <= m_eastDist[coord_to_index(x, pos.y)]);
-					m_eastDist[idx] = dist;
+					if (!barrier || dist != 0) {
+						m_eastDist[idx] = dist;
+					}
 				}
 				break;
 			case Direction::SOUTH:
@@ -416,7 +425,9 @@ namespace ricochet {
 					}
 
 					assert(dist <= m_southDist[idx]);
-					m_southDist[idx] = dist;
+					if (!barrier || dist != 0) {
+						m_southDist[idx] = dist;
+					}
 				}
 				break;
 			case Direction::WEST:
@@ -426,7 +437,9 @@ namespace ricochet {
 						break;
 					}
 					assert(dist <= m_westDist[coord_to_index(x, pos.y)]);
-					m_westDist[idx] = dist;
+					if (!barrier || dist != 0) {
+						m_westDist[idx] = dist;
+					}
 				}
 				break;
 		}

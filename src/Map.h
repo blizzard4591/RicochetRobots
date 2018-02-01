@@ -122,7 +122,7 @@ namespace ricochet {
 
 		coord distToWall(Pos const& pos, Direction dir) const;
 
-		void insertSemiWall(Pos const& pos, Direction dir);
+		void insertSemiWall(Pos const& pos, Direction dir, bool barrier);
 	};
 
 }
