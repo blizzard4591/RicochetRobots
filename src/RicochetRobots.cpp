@@ -16,6 +16,9 @@
 #if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
 #include <fcntl.h>
 #include <io.h>
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 #endif
 
 static std::string mapname;
@@ -36,8 +39,8 @@ public:
 
 	/**
 	 * Create a StreamSink from some output stream.
-     * @param os Output stream.
-     */
+	* @param os Output stream.
+	*/
 	static auto create(std::wostream& os) {
 		return l3pp::ptr<wide_stream_sink>(new wide_stream_sink(os));
 	}
@@ -46,7 +49,9 @@ public:
 void initLog() {
 	l3pp::initialize();
 #if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
-	auto sink = l3pp::wide_stream_sink::create(std::wclog);
+	std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
+	std::wclog.imbue(loc);
+	auto sink = wide_stream_sink::create(std::wclog);
 #else
 	auto sink = l3pp::stream_sink::create(std::clog);
 #endif
@@ -109,6 +114,19 @@ int program(std::vector<std::string>& args) {
 #if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
 
 int wmain(int argc, wchar_t* argv[]) {
+	UINT const oldInputCodepage = GetConsoleCP();
+	UINT const oldOutputCodepage = GetConsoleOutputCP();
+
+	// UTF-8
+	if (!SetConsoleCP(65001)) {
+		std::cerr << "Setting Codepage failed: " << GetLastError() << std::endl;
+		return -1;
+	}; 
+	if (!SetConsoleOutputCP(65001)) {
+		std::cerr << "Setting Output Codepage failed: " << GetLastError() << std::endl;
+		return -1;
+	};
+
 	_setmode(_fileno(stdout), _O_U16TEXT);
 
 	initLog();
@@ -118,7 +136,13 @@ int wmain(int argc, wchar_t* argv[]) {
 		args.emplace_back(toUtf8(argv[i]));
 	}
 
-	return program(args);
+	int const result =  program(args);
+
+	// Reset Console CP
+	SetConsoleCP(oldInputCodepage);
+	SetConsoleOutputCP(oldOutputCodepage);
+
+	return result;
 }
 
 #else

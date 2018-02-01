@@ -71,47 +71,47 @@ namespace ricochet {
 				size_t const lineIndex = y * 3u;
 				if (!canGoUp) {
 					//lines.at(lineIndex).append("┌─┐");
-					lines.at(lineIndex).append("\u250C\u2500\u2510");
+					lines.at(lineIndex).append(u8"\u250C\u2500\u2510");
 				} else {
 					//lines.at(lineIndex).append("┌ ┐");
-					lines.at(lineIndex).append("\u250C \u2510");
+					lines.at(lineIndex).append(u8"\u250C \u2510");
 				}
 
 				if (!canGoDown) {
 					//lines.at(lineIndex + 2u).append("└─┘");
-					lines.at(lineIndex + 2u).append("\u2514\u2500\u2518");
+					lines.at(lineIndex + 2u).append(u8"\u2514\u2500\u2518");
 				} else {
 					//lines.at(lineIndex + 2u).append("└ ┘");
-					lines.at(lineIndex + 2u).append("\u2514 \u2518");
+					lines.at(lineIndex + 2u).append(u8"\u2514 \u2518");
 				}
 
 				if (!canGoLeft) {
 					//lines.at(lineIndex + 1u).append("│");
-					lines.at(lineIndex + 1u).append("\u2502");
+					lines.at(lineIndex + 1u).append(u8"\u2502");
 				} else {
-					lines.at(lineIndex + 1u).append(" ");
+					lines.at(lineIndex + 1u).append(u8" ");
 				}
 
 				switch (tileType) {
 					case TileType::EMPTY:
-						lines.at(lineIndex + 1u).append(" ");
+						lines.at(lineIndex + 1u).append(u8" ");
 						break;
 					case TileType::BARRIER:
 					{
 						Barrier const& barrier = tile.barrier();
 						if (barrier.alignment == BarrierType::FWD) {
 							//lines.at(lineIndex + 1u).append("╱");
-							lines.at(lineIndex + 1u).append("\u2571");
+							lines.at(lineIndex + 1u).append(u8"\u2571");
 						} else {
 							//lines.at(lineIndex + 1u).append("╲");
-							lines.at(lineIndex + 1u).append("\u2572");
+							lines.at(lineIndex + 1u).append(u8"\u2572");
 						}
 						break;
 					}
 					case TileType::ROBOT:
 					{
 						Robot const& robot = tile.robot();
-						lines.at(lineIndex + 1u).append("R");
+						lines.at(lineIndex + 1u).append(u8"R");
 						break;
 					}
 					default:
@@ -120,9 +120,9 @@ namespace ricochet {
 
 				if (!canGoRight) {
 					//lines.at(lineIndex + 1u).append("│");
-					lines.at(lineIndex + 1u).append("\u2502");
+					lines.at(lineIndex + 1u).append(u8"\u2502");
 				} else {
-					lines.at(lineIndex + 1u).append(" ");
+					lines.at(lineIndex + 1u).append(u8" ");
 				}
 			}
 		}
