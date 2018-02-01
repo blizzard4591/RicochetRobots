@@ -70,7 +70,7 @@ namespace ricochet {
 				// Cannot make moves after reaching goal
 				return false;
 			}
-			if (!changeDir && m.color == m_currentGoal->color) {
+			if (!changeDir && (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX)) {
 				if (firstDir) {
 					if (*firstDir != m.dir) {
 						changeDir = true;
@@ -87,11 +87,15 @@ namespace ricochet {
 				// Invalid move
 				return false;
 			}
-			if (m.color == m_currentGoal->color) {
+			if (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX) {
 				if (pos == m_currentGoal->pos) {
 					onGoal = true;
 				}
 			}
+		}
+
+		if (!onGoal) {
+			return false;
 		}
 
 		if (!validateOnly) {
