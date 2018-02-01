@@ -84,8 +84,26 @@ namespace ricochet {
 
 		std::string toString() const;
 
-		auto getRobotPos(Color c) const {
-			return m_robots[(int)c-1];
+		Pos const& getRobotPos(Color c) const {
+			return robots()[(int)c-1];
+		}
+
+		void push() {
+			m_robotStack.push_back(m_robotStack[0]);
+		}
+
+		void pop() {
+			if (m_robotStack.size() > 1) {
+				robots() = m_robotStack.back();
+				m_robotStack.pop_back();
+			}
+		}
+
+		void popAll() {
+			if (m_robotStack.size() > 1) {
+				robots() = *(m_robotStack.begin() + 1);
+				m_robotStack.erase(m_robotStack.begin() + 1, m_robotStack.end());
+			}
 		}
 	private:
 		coord m_width;
@@ -101,10 +119,18 @@ namespace ricochet {
 
 		std::vector<Goal> m_goals;
 
-		mutable std::array<Pos, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> m_robots;
+		typedef std::array<Pos, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> RobotData;
+		mutable std::vector<RobotData> m_robotStack;
 
-		auto getRobotPos(Color c) {
-			return m_robots[(int)c-1];
+		RobotData& robots() {
+			return m_robotStack[0];
+		}
+		RobotData const& robots() const {
+			return m_robotStack[0];
+		}
+
+		auto& getRobotPos(Color c) {
+			return robots()[(int)c-1];
 		}
 
 		size_t coord_to_index(coord x, coord y) const;

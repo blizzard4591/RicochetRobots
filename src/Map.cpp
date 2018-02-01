@@ -40,6 +40,9 @@ namespace ricochet {
 		m_tiles.resize(size);
 		m_goals.resize(size);
 
+		m_robotStack.reserve(5);
+		m_robotStack.resize(1);
+
 		initDist();
 	}
 
@@ -68,7 +71,7 @@ namespace ricochet {
 
 				std::optional<Color> curRobot;
 				size_t i = 0;
-				for (auto r_it = m_robots.begin(); r_it != m_robots.end(); r_it++, i++) {
+				for (auto r_it = robots().begin(); r_it != robots().end(); r_it++, i++) {
 					if (*r_it == pos) {
 						curRobot = static_cast<Color>(i+1);
 					}
@@ -213,7 +216,7 @@ namespace ricochet {
 			throw std::runtime_error("insertRobot: Not empty");
 		}
 
-		m_robots[(int)r.color - 1] = pos;
+		robots()[(int)r.color - 1] = pos;
 	}
 
 	void Map::insertGoal(Goal const& g) {
@@ -261,7 +264,7 @@ namespace ricochet {
 		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY ||
 			   m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::GOAL);
 		// Assume all ok
-		m_robots[(int)r.color - 1] = newPos;
+		robots()[(int)r.color - 1] = newPos;
 	}
 
 	size_t Map::coord_to_index(coord x, coord y) const {
@@ -315,8 +318,8 @@ namespace ricochet {
 	};
 
 	Pos Map::nextPos(Robot const& robot, Direction dir) const {
-		Pos newPos = m_robots[(int)robot.color - 1];
-		PosHolder holder(m_robots[(int)robot.color - 1]);
+		Pos newPos = getRobotPos(robot.color);
+		PosHolder holder(m_robotStack[0][(int)robot.color - 1]);
 
 		while (true) {
 			auto dWall = distToWall(newPos, dir);
@@ -392,7 +395,7 @@ namespace ricochet {
 	}
 
 	coord Map::distToRobot(Pos const &pos, Direction dir, coord maxDist) const {
-		for (auto const& rpos: m_robots) {
+		for (auto const& rpos: robots()) {
 			switch (dir) {
 				case Direction::NORTH:
 					if (pos.x == rpos.x) {

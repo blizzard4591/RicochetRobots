@@ -106,13 +106,16 @@ int program(std::vector<std::string>& args) {
 	//test.insertRobot(ricochet::Robot{ricochet::Color::RED}, ricochet::Pos{2, 0});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
 	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{2, 5});
-	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{2, 0});
+	//test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{2, 0});
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << test.toString());
 
 	auto next = test.nextPos(rbot, ricochet::Direction::SOUTH);
+	test.push();
 	test.moveRobot(rbot, next);
-
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << test.toString());
+
+	test.pop();
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 4: \n" << test.toString());
 
 	return 0;
 }
