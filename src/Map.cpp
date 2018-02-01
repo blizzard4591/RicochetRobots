@@ -14,6 +14,8 @@ namespace ricochet {
 			return TileType::BARRIER;
 		} else if (std::holds_alternative<Robot>(m_data)) {
 			return TileType::ROBOT;
+		} else if (std::holds_alternative<Inaccessible>(m_data)) {
+			return TileType::INACCESSIBLE;
 		} else {
 			throw std::runtime_error("Unexpected and unhandled TileType in getType!");
 		}
@@ -114,6 +116,11 @@ namespace ricochet {
 						lines.at(lineIndex + 1u).append(u8"R");
 						break;
 					}
+					case TileType::INACCESSIBLE:
+					{
+						lines.at(lineIndex + 1u).append(u8"░");
+						break;
+					}
 					default:
 						throw std::runtime_error("Unexpected TileType in Map::toString!");
 				}
@@ -200,6 +207,29 @@ namespace ricochet {
 			throw std::runtime_error("insertGoal: Not empty");
 		}
 		m_goals[coord_to_index(pos.x, pos.y)] = g;
+	}
+
+	void Map::insertInaccessible(Pos const& pos) {
+		if (!posValid(pos)) {
+			throw std::range_error("insertInaccessible: Invalid pos");
+		}
+		if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
+			throw std::runtime_error("insertInaccessible: Not empty");
+		}
+		m_tiles[coord_to_index(pos.x, pos.y)] = Inaccessible{};
+
+		try{
+			insertSemiWall(movePos(pos, Direction::SOUTH), Direction::NORTH, true);
+		} catch (std::runtime_error) {}
+		try{
+			insertSemiWall(movePos(pos, Direction::WEST), Direction::EAST, true);
+		} catch (std::runtime_error) {}
+		try {
+		insertSemiWall(movePos(pos, Direction::NORTH), Direction::SOUTH, true);
+		} catch (std::runtime_error) {}
+		try{
+			insertSemiWall(movePos(pos, Direction::EAST), Direction::WEST, true);
+		} catch (std::runtime_error) {}
 	}
 
 

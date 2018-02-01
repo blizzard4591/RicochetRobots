@@ -30,6 +30,7 @@ namespace ricochet {
 		EMPTY,
 		BARRIER,
 		ROBOT,
+		INACCESSIBLE,
 	};
 
 	enum class GoalTileType {
@@ -38,11 +39,13 @@ namespace ricochet {
 	};
 
 	struct Empty {};
+	struct Inaccessible {};
 
 	struct Tile {
 		Tile() : m_data(Empty{}) {}
 		Tile(Barrier b) : m_data(std::move(b)) {}
 		Tile(Robot r) : m_data(std::move(r)) {}
+		Tile(Inaccessible i) : m_data(std::move(i)) {}
 
 		TileType getType() const;
 
@@ -50,7 +53,7 @@ namespace ricochet {
 
 		Robot const& robot() const;
 	private:
-		std::variant<Empty, Barrier, Robot> m_data;
+		std::variant<Empty, Inaccessible, Barrier, Robot> m_data;
 	};
 
 	struct GoalTile {
@@ -80,6 +83,8 @@ namespace ricochet {
 		void insertRobot(Robot const& r, Pos const& pos);
 
 		void insertGoal(Goal const& g, Pos const& pos);
+
+		void insertInaccessible(Pos const& pos);
 
 		bool posValid(Pos const& pos) const;
 

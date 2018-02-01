@@ -203,6 +203,11 @@ namespace ricochet {
 		for(auto const& w: m_walls) {
 			map.insertWall(w.position, w.relativeWallDirection);
 		}
+		for(auto const& o: m_obstacles) {
+			if (o.obstacleType == ObstacleType::INACCESSIBLE_CENTER_AREA) {
+				map.insertInaccessible(o.position);
+			}
+		}
 		for(auto const& b: m_barriers) {
 			map.insertBarrier(Barrier{b.barrierType, b.barrierColor}, b.position);
 		}
