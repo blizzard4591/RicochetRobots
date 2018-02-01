@@ -68,9 +68,9 @@ namespace ricochet {
 		Pos pos;
 		bool onGoal = false;
 		for(auto const& m: moveSeq) {
-			if (onGoal) {
-				// Cannot make moves after reaching goal
-				return false;
+			if (const_cast<Map const&>(m_map).getRobotPos(m.color) == m_currentGoal->pos) {
+				// Leaving the goal (or staying away)
+				onGoal = false;
 			}
 			try {
 				Direction moveDir = m.dir;
@@ -87,7 +87,8 @@ namespace ricochet {
 			}
 		}
 
-		if (!onGoal) {
+		if (!onGoal || (m_currentGoal->color != Color::MIX && lastColor != m_currentGoal->color)) {
+			// Goal not occupied, or last move was superfluous
 			return false;
 		}
 
