@@ -255,7 +255,7 @@ namespace ricochet {
 		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY);
 		using std::swap;
 		swap(m_tiles[coord_to_index(oldPos.x, oldPos.y)], m_tiles[coord_to_index(newPos.x, newPos.y)]);
-		m_robots[(int)r.color - 1] = newPos;
+		oldPos = newPos;
 	}
 
 	size_t Map::coord_to_index(coord x, coord y) const {
