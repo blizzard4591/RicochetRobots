@@ -103,15 +103,12 @@ namespace ricochet {
 		Move goalMove;
 		bool onGoal = false;
 		for(auto& m: targetMoves) {
-			if (const_cast<Map const&>(m_map).getRobotPos(m.color) == m_currentGoal->pos) {
+			Pos const& pos = const_cast<Map const&>(m_map).getRobotPos(m.color);
+			if (pos == m_currentGoal->pos) {
 				// Leaving the goal (or staying away)
 				onGoal = false;
 			}
-			Pos pos;
-			try {
-				pos = m_map.nextPos(Robot{m.color}, m.dir);
-			} catch (std::runtime_error&) {
-				// Invalid move
+			if (!m_map.moveRobot(Robot{m.color}, m.dir)) {
 				return false;
 			}
 			if (pos == m_currentGoal->pos && (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX)) {

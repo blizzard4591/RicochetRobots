@@ -271,13 +271,6 @@ namespace ricochet {
 		return (dObs > 0u) && (dWall > 0u);
 	}
 
-	void Map::moveRobot(Robot const& r,Pos const& newPos) {
-		assert(m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::EMPTY ||
-			   m_tiles[coord_to_index(newPos.x, newPos.y)].getType() == TileType::GOAL);
-		// Assume all ok
-		robots()[(int)r.color - 1] = newPos;
-	}
-
 	size_t Map::coord_to_index(coord x, coord y) const {
 		assert(x < m_width);
 		assert(y < m_height);
@@ -317,34 +310,25 @@ namespace ricochet {
 		assert(m_westDist.size() == (m_width * m_height));
 	}
 
-	struct PosHolder {
-		Pos& pos;
-		Pos old;
-		explicit PosHolder(Pos& pos) : pos(pos), old(pos) {
-			pos = Pos{std::numeric_limits<coord>::max(), std::numeric_limits<coord>::max()};
-		}
-		~PosHolder() {
-			pos = old;
-		}
-	};
-
-	Pos Map::nextPos(Robot const& robot, Direction& dir) const {
-		Pos newPos = getRobotPos(robot.color);
-		PosHolder holder(m_robotStack[0][(int)robot.color - 1]);
+	bool Map::moveRobot(Robot const& robot, Direction& dir) const {
+		Pos& pos = m_robotStack[0][(int)robot.color - 1];
+		Pos orig = pos;
 
 		while (true) {
-			auto dWall = distToWall(newPos, dir);
-			auto dObs = dWall ? distToRobot(newPos, dir, dWall) : dWall;
+			auto dWall = distToWall(pos, dir);
+			auto dObs = dWall ? distToRobot(pos, dir, dWall) : dWall;
 			auto dist = std::min(dObs, dWall);
 			if (dist == 0) {
 				// Invalid move
-				throw std::runtime_error("TODO: Handle invalid move");
+				pos = orig;
+				return false;
 			}
-			newPos = movePos(newPos, dir, dist);
-
-			//TODO: check if newPos occurred before to break cycles
-
-			auto& curTile = getTile(newPos);
+			pos = movePos(pos, dir, dist);
+			if (pos == orig) {
+				// Cycle
+				return false;
+			}
+			auto& curTile = getTile(pos);
 			if (curTile.getType() == TileType::BARRIER) {
 				// If barrier, change direction if required,
 				// update position
@@ -384,10 +368,10 @@ namespace ricochet {
 				}
 			} else {
 				// Hit wall or obstacle, done
-				break;
+				return true;
 			}
 		}
-		return newPos;
+		return true;
 	}
 
 	Pos Map::movePos(Pos const& pos, Direction dir, coord dist) const {

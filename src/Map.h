@@ -75,9 +75,7 @@ namespace ricochet {
 
 		bool canTravel(Pos const& pos, Direction dir) const;
 
-		void moveRobot(Robot const& r, Pos const& newPos);
-
-		Pos nextPos(Robot const& robot, Direction& dir) const;
+		bool moveRobot(Robot const& robot, Direction& dir) const;
 
 		std::string toString() const;
 
