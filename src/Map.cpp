@@ -227,7 +227,7 @@ namespace ricochet {
 			throw std::runtime_error("insertRobot: Not empty");
 		}
 
-		robots()[(int)r.color - 1] = pos;
+		getRobotPos(r.color) = pos;
 	}
 
 	void Map::insertGoal(Goal const& g) {
@@ -310,8 +310,8 @@ namespace ricochet {
 		assert(m_westDist.size() == (m_width * m_height));
 	}
 
-	bool Map::moveRobot(Robot const& robot, Direction& dir) const {
-		Pos& pos = m_robotStack[0][(int)robot.color - 1];
+	bool Map::moveRobot(Color const& robot, Direction& dir) const {
+		Pos& pos = m_robotStack[0][static_cast<std::underlying_type_t<Color>>(robot)];
 		Pos orig = pos;
 
 		while (true) {
@@ -333,7 +333,7 @@ namespace ricochet {
 				// If barrier, change direction if required,
 				// update position
 				auto& barrier = curTile.barrier();
-				if (barrier.color != robot.color) {
+				if (barrier.color != robot) {
 					bool fwd = barrier.alignment == BarrierType::FWD;
 					switch (dir) {
 						case Direction::NORTH:

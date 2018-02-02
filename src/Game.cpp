@@ -109,7 +109,7 @@ namespace ricochet {
 				// Leaving the goal (or staying away)
 				onGoal = false;
 			}
-			if (!m_map.moveRobot(Robot{m.color}, m.dir)) {
+			if (!m_map.moveRobot(m.color, m.dir)) {
 				return false;
 			}
 			if (pos == m_currentGoal->pos && (m.color == m_currentGoal->color || m_currentGoal->color == Color::MIX)) {

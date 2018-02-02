@@ -75,12 +75,12 @@ namespace ricochet {
 
 		bool canTravel(Pos const& pos, Direction dir) const;
 
-		bool moveRobot(Robot const& robot, Direction& dir) const;
+		bool moveRobot(Color const& robot, Direction& dir) const;
 
 		std::string toString() const;
 
 		Pos const& getRobotPos(Color c) const {
-			return robots()[(int)c-1];
+			return robots()[static_cast<std::underlying_type_t<Color>>(c)];
 		}
 
 		std::vector<Goal> getGoals() const;
@@ -122,7 +122,7 @@ namespace ricochet {
 
 		std::vector<Tile> m_tiles;
 
-		typedef std::array<Pos, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> RobotData;
+		typedef std::array<Pos, static_cast<std::underlying_type_t<Color>>(Color::SILVER)> RobotData;
 		mutable std::vector<RobotData> m_robotStack;
 
 		RobotData& robots() {
@@ -133,7 +133,7 @@ namespace ricochet {
 		}
 
 		auto& getRobotPos(Color c) {
-			return robots()[(int)c-1];
+			return robots()[static_cast<std::underlying_type_t<Color>>(c)];
 		}
 
 		size_t coord_to_index(coord x, coord y) const;

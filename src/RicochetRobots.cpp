@@ -103,7 +103,12 @@ int program(std::vector<std::string>& args) {
 	ricochet::Game game(std::move(test), false);
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << game.getMap().toString());
 
-	game.doMove({ricochet::Move{ricochet::Color::BLUE, ricochet::Direction::SOUTH}}, true);
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Move seq: " << game.doMove({ricochet::Move{ricochet::Color::BLUE, ricochet::Direction::SOUTH}}, true));
+
+	auto dir = ricochet::Direction::SOUTH;
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Move: " << const_cast<ricochet::Map&>(game.getMap()).moveRobot(ricochet::Color::BLUE, dir));
+
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << game.getMap().toString());
 
 	return 0;
 }
