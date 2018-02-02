@@ -38,7 +38,6 @@ namespace ricochet {
 		m_westDist.resize(size);
 
 		m_tiles.resize(size);
-		m_goals.resize(size);
 
 		m_robotStack.reserve(5);
 		m_robotStack.resize(1);
@@ -161,6 +160,17 @@ namespace ricochet {
 		return ss.str();
 	}
 
+	std::vector<Goal> Map::getGoals() const {
+		std::vector<Goal> goals;
+		for(size_t idx = 0; idx < m_tiles.size(); idx++) {
+			if (m_tiles[idx].getType() == TileType::GOAL) {
+				auto const& g = m_tiles[idx].goal();
+				goals.push_back(Goal{g.type, g.color, index_to_coord(idx)});
+			}
+		}
+		return goals;
+	}
+
 	void Map::insertWall(Pos const& pos, Direction dir) {
 		Pos pos2 = movePos(pos, dir);
 		Direction dir2;
@@ -212,7 +222,8 @@ namespace ricochet {
 		if (!posValid(pos)) {
 			throw std::range_error("insertRobot: Invalid pos");
 		}
-		if (m_tiles[coord_to_index(pos.x, pos.y)].getType() != TileType::EMPTY) {
+		auto const& tileType = m_tiles[coord_to_index(pos.x, pos.y)].getType();
+		if (tileType != TileType::EMPTY && tileType != TileType::GOAL) {
 			throw std::runtime_error("insertRobot: Not empty");
 		}
 
@@ -223,7 +234,7 @@ namespace ricochet {
 		if (!posValid(g.pos)) {
 			throw std::range_error("insertGoal: Invalid pos");
 		}
-		m_goals.push_back(g);
+		m_tiles[coord_to_index(g.pos.x, g.pos.y)] = GoalTile{g.type, g.color};
 	}
 
 	void Map::insertInaccessible(Pos const& pos) {

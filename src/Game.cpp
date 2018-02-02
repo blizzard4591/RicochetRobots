@@ -22,6 +22,42 @@ namespace ricochet {
 		}
 	}
 
+	Game::Game(Map map, bool useSilver) :
+			m_map(std::move(map)), m_remainingGoals(m_map.getGoals()),
+			m_useSilver(useSilver)
+	{
+		// Place robots on the board. If useSilver, also do so for the silver one
+		std::uniform_int_distribution<coord> disX(0, m_map.getWidth() - 1);
+		std::uniform_int_distribution<coord> disY(0, m_map.getHeight() - 1);
+		for(auto c: RobotColors) {
+			if (c == Color::SILVER && !useSilver) {
+				continue;
+			}
+			while (true) {
+				Pos pos;
+
+				pos.x = disX(detail::random_generator());
+				pos.y = disY(detail::random_generator());
+
+				auto const& tile = m_map.getTileType(pos);
+				if (tile == TileType::EMPTY || tile == TileType::GOAL) {
+					// Check not conflicting with other robots
+					bool occupied = false;
+					for(auto c2: RobotColors) {
+						if (const_cast<Map const&>(m_map).getRobotPos(c2) == pos) {
+							occupied = true;
+							break;
+						}
+					}
+					if (!occupied) {
+						m_map.insertRobot(Robot{c}, pos);
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	Goal Game::nextGoal() {
 		assert(!done());
 		if (m_remainingGoals.empty()) {

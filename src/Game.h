@@ -12,10 +12,10 @@ namespace ricochet {
 
 		std::vector<Goal> m_remainingGoals;
 		std::optional<Goal> m_currentGoal;
+		bool m_useSilver;
+
 	public:
-		explicit Game(Map map) :
-				m_map(std::move(map)), m_remainingGoals(m_map.getGoals())
-			{}
+		explicit Game(Map map, bool useSilver);
 
 		~Game() = default;
 
@@ -27,6 +27,10 @@ namespace ricochet {
 
 		bool done() const {
 			return m_remainingGoals.empty() && !m_currentGoal.has_value();
+		}
+
+		Map const& getMap() const {
+			return m_map;
 		}
 
 		/**

@@ -42,6 +42,7 @@ namespace ricochet {
 		Tile() : m_data(Empty{}) {}
 		Tile(Barrier b) : m_data(std::move(b)) {}
 		Tile(Inaccessible i) : m_data(std::move(i)) {}
+		Tile(GoalTile g) : m_data(std::move(g)) {}
 
 		TileType getType() const;
 
@@ -59,10 +60,6 @@ namespace ricochet {
 
 		coord getWidth() const;
 		coord getHeight() const;
-
-		auto getGoals() const {
-			return m_goals;
-		}
 
 		void insertWall(Pos const& pos, Direction dir);
 
@@ -86,6 +83,12 @@ namespace ricochet {
 
 		Pos const& getRobotPos(Color c) const {
 			return robots()[(int)c-1];
+		}
+
+		std::vector<Goal> getGoals() const;
+
+		TileType getTileType(Pos const& p) const {
+			return m_tiles[coord_to_index(p.x, p.y)].getType();
 		}
 
 		void push() {
@@ -120,8 +123,6 @@ namespace ricochet {
 		std::vector<coord> m_westDist;
 
 		std::vector<Tile> m_tiles;
-
-		std::vector<Goal> m_goals;
 
 		typedef std::array<Pos, RICOCHET_ROBOTS_MAX_ROBOT_COUNT> RobotData;
 		mutable std::vector<RobotData> m_robotStack;

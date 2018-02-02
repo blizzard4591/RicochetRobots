@@ -16,7 +16,7 @@ set(ricochet_files
 	src/Color.h
 	src/Defines.h
     src/Direction.h
-    src/GoalType.h
+    src/Goal.h
 	src/Map.h 
 	src/Map.cpp 
 	src/MapBuilder.h 

@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 #include "MapBuilder.h"
-#include "Map.h"
+#include "Game.h"
 
 #if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
 #include <fcntl.h>
@@ -98,25 +98,12 @@ int program(std::vector<std::string>& args) {
 	ricochet::MapBuilder builder = ricochet::MapBuilder::fromJson(buffer.str());
 
 	ricochet::Map test = builder.toMap();
-
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
 
-	auto rbot = ricochet::Robot{ricochet::Color::BLUE};
-	test.insertRobot(rbot, ricochet::Pos{1, 0});
-	//test.insertRobot(ricochet::Robot{ricochet::Color::RED}, ricochet::Pos{2, 0});
-	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{1, 5});
-	test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::FWD, ricochet::Color::RED}, ricochet::Pos{2, 5});
-	//test.insertBarrier(ricochet::Barrier{ricochet::BarrierType::BWD, ricochet::Color::RED}, ricochet::Pos{2, 0});
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << test.toString());
+	ricochet::Game game(std::move(test), false);
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << game.getMap().toString());
 
-	auto dir = ricochet::Direction::SOUTH;
-	auto next = test.nextPos(rbot, dir);
-	test.push();
-	test.moveRobot(rbot, next);
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << test.toString());
-
-	test.pop();
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 4: \n" << test.toString());
+	game.doMove({ricochet::Move{ricochet::Color::BLUE, ricochet::Direction::SOUTH}}, true);
 
 	return 0;
 }
