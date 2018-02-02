@@ -100,10 +100,11 @@ namespace ricochet {
 
 		// Same as moveSeq, with Direction updated to take barriers into account
 		MoveSequence targetMoves = moveSeq;
-		Move goalMove;
+		size_t goalIndex, i = 0;
 		bool onGoal = false;
 		for(auto& m: targetMoves) {
 			Pos const& pos = const_cast<Map const&>(m_map).getRobotPos(m.color);
+			auto origDir = m.dir;
 			if (pos == m_currentGoal->pos) {
 				// Leaving the goal (or staying away)
 				onGoal = false;
@@ -115,8 +116,10 @@ namespace ricochet {
 				// Goal occupied. More moves may follow, for example to
 				// get changeDir to be true
 				onGoal = true;
-				goalMove = m;
+				goalIndex = i;
 			}
+
+			i++;
 		}
 
 		if (!onGoal) {
@@ -125,8 +128,9 @@ namespace ricochet {
 		}
 
 		bool changeDir = false;
-		for(auto const& m: targetMoves) {
-			if (m.color == goalMove.color && m.dir != goalMove.dir && m.dir != oppDir(goalMove.dir)) {
+		for(auto it = targetMoves.begin(); it < targetMoves.begin()+goalIndex; it++) {
+			auto const& m = *it;
+			if (m.color == moveSeq[goalIndex].color && m.dir != moveSeq[goalIndex].dir && m.dir != oppDir(moveSeq[goalIndex].dir)) {
 				changeDir = true;
 				break;
 			}
