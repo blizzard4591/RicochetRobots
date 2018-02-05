@@ -11,6 +11,9 @@ namespace ricochet {
 
 	using direction_t = std::underlying_type_t<Direction>;
 
+	static constexpr std::array<Direction, 4> AllDirections = {Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST};
+
+
 	inline Direction directionFromInt(direction_t i) {
 		switch (i) {
 			case static_cast<std::underlying_type_t<Direction>>(Direction::NORTH):

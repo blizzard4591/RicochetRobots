@@ -23,7 +23,7 @@ namespace ricochet {
 		}
 
 		bool operator==(const move_iterator& other) {
-			return (m_move.color == other.m_move.color) && (m_move.dir == other.m_move.dir);
+			return (m_move == other.m_move);
 		}
 
 		bool operator!=(const move_iterator& other) {

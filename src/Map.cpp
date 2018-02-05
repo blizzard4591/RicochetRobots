@@ -77,7 +77,7 @@ namespace ricochet {
 
 				std::optional<Color> curRobot;
 				size_t i = 0;
-				for (auto r_it = robots().begin(); r_it != robots().end(); r_it++, i++) {
+				for (auto r_it = robotData().begin(); r_it != robotData().end(); r_it++, i++) {
 					if (*r_it == pos) {
 						curRobot = static_cast<Color>(i+1);
 					}
@@ -406,7 +406,7 @@ namespace ricochet {
 	}
 
 	coord Map::distToRobot(Pos const &pos, Direction dir, coord maxDist) const {
-		for (auto const& rpos: robots()) {
+		for (auto const& rpos: robotData()) {
 			switch (dir) {
 				case Direction::NORTH:
 					if (pos.x == rpos.x) {

@@ -6,8 +6,8 @@
 
 namespace ricochet {
 
-	Game::Game(Map map, bool useSilver) :
-			m_map(std::move(map)), m_remainingGoals(m_map.getGoals()),
+	Game::Game(Map const& map, bool useSilver) :
+			m_map(map), m_remainingGoals(m_map.getGoals()),
 			m_useSilver(useSilver)
 	{
 		// Place robots on the board. If useSilver, also do so for the silver one

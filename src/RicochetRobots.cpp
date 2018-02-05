@@ -12,6 +12,7 @@
 #include <string>
 #include "MapBuilder.h"
 #include "Game.h"
+#include "ReachabilityAnalysis.h"
 
 #if defined(WIN32) || defined(WIN64) || defined(_MSC_VER)
 #include <fcntl.h>
@@ -100,13 +101,21 @@ int program(std::vector<std::string>& args) {
 	ricochet::Map test = builder.toMap();
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data: \n" << test.toString());
 
-	ricochet::Game game(std::move(test), false);
+	ricochet::Game game(test, true);
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << game.getMap().toString());
 
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Move seq: " << game.doMove({ricochet::Move{ricochet::Color::BLUE, ricochet::Direction::SOUTH}}, true));
+	auto ra = ricochet::ReachabilityAnalysis();
+	ra.dfs(game.getMap());
 
+	auto& map = game.getMap();
+	map.insertRobot({ricochet::Color::BLUE}, ricochet::Pos{1, 0});
+	L3PP_LOG_INFO(l3pp::getRootLogger(), map.hash());
 	auto dir = ricochet::Direction::SOUTH;
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Move: " << const_cast<ricochet::Map&>(game.getMap()).moveRobot(ricochet::Color::BLUE, dir));
+	map.moveRobot(ricochet::Color::BLUE, dir);
+	L3PP_LOG_INFO(l3pp::getRootLogger(), map.hash());
+	dir = ricochet::Direction::NORTH;
+	map.moveRobot(ricochet::Color::BLUE, dir);
+	L3PP_LOG_INFO(l3pp::getRootLogger(), map.hash());
 
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << game.getMap().toString());
 

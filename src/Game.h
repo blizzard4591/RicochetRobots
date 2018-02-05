@@ -14,7 +14,7 @@ namespace ricochet {
 		std::optional<Goal> m_currentGoal;
 		bool m_useSilver;
 	public:
-		explicit Game(Map map, bool useSilver);
+		explicit Game(Map const& map, bool useSilver);
 
 		~Game() = default;
 
@@ -41,6 +41,9 @@ namespace ricochet {
 		}
 
 		Map const& getMap() const {
+			return m_map;
+		}
+		Map& getMap() {
 			return m_map;
 		}
 

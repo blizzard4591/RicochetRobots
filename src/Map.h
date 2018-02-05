@@ -55,8 +55,17 @@ namespace ricochet {
 
 	class Map {
 	public:
+		typedef std::array<Pos, static_cast<std::underlying_type_t<Color>>(Color::SILVER)+1> RobotData;
+		typedef uint64_t hash_t;
+
 		Map(coord width, coord height);
-		virtual ~Map() = default;
+		~Map() = default;
+
+		Map(Map const&) = default;
+		Map(Map&&) = default;
+
+		Map& operator=(Map const&) = default;
+		Map& operator=(Map&&) = default;
 
 		coord getWidth() const;
 		coord getHeight() const;
@@ -80,7 +89,7 @@ namespace ricochet {
 		std::string toString() const;
 
 		Pos const& getRobotPos(Color c) const {
-			return robots()[static_cast<std::underlying_type_t<Color>>(c)];
+			return robotData()[static_cast<std::underlying_type_t<Color>>(c)];
 		}
 
 		std::vector<Goal> getGoals() const;
@@ -89,13 +98,20 @@ namespace ricochet {
 			return m_tiles[coord_to_index(p.x, p.y)].getType();
 		}
 
-		void push() {
+		auto push() {
 			m_stateStack.push_back(m_curState);
+			return m_stateStack.size() - 1;
 		}
 
-		void pop() {
-			if (m_stateStack.size() > 1) {
-				m_curState = m_stateStack.back();
+		void restore(size_t i) {
+			m_curState = m_stateStack[i];
+		}
+
+		void pop(bool load = true) {
+			if (!m_stateStack.empty()) {
+				if (load) {
+					m_curState = m_stateStack.back();
+				}
 				m_stateStack.pop_back();
 			}
 		}
@@ -110,6 +126,19 @@ namespace ricochet {
 		void apply() {
 			m_stateStack.clear();
 		}
+
+		void loadState(RobotData const& robots, hash_t hash) {
+			m_curState.robots = robots;
+			m_curState.hash = hash;
+		}
+
+		RobotData const& robotData() const {
+			return m_curState.robots;
+		}
+
+		hash_t hash() const {
+			return m_curState.hash;
+		}
 	private:
 		coord m_width;
 		coord m_height;
@@ -122,26 +151,21 @@ namespace ricochet {
 
 		std::vector<Tile> m_tiles;
 
-		typedef std::array<Pos, static_cast<std::underlying_type_t<Color>>(Color::SILVER)> RobotData;
-
 		struct State {
 			RobotData robots;
-			uint64_t hash;
+			hash_t hash;
 		};
 
 		std::vector<State> m_stateStack;
 		State m_curState;
 
-		std::vector<uint64_t> m_hashTable;
+		std::vector<hash_t> m_hashTable;
 
-		uint64_t hash(coord x, coord y, Color c) const {
-			return coord_to_index(x, y) * static_cast<std::underlying_type_t<Color>>(c)-1;
+		hash_t hash(coord x, coord y, Color c) const {
+			return m_hashTable[coord_to_index(x, y) * (static_cast<std::underlying_type_t<Color>>(c))];
 		}
 
 		RobotData& robots() {
-			return m_curState.robots;
-		}
-		RobotData const& robots() const {
 			return m_curState.robots;
 		}
 
