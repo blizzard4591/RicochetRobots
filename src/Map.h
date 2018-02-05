@@ -75,7 +75,7 @@ namespace ricochet {
 
 		bool canTravel(Pos const& pos, Direction dir) const;
 
-		bool moveRobot(Color const& robot, Direction& dir) const;
+		bool moveRobot(Color const& robot, Direction& dir);
 
 		std::string toString() const;
 
@@ -123,7 +123,14 @@ namespace ricochet {
 		std::vector<Tile> m_tiles;
 
 		typedef std::array<Pos, static_cast<std::underlying_type_t<Color>>(Color::SILVER)> RobotData;
-		mutable std::vector<RobotData> m_robotStack;
+		std::vector<RobotData> m_robotStack;
+
+		std::vector<uint64_t> m_hashTable;
+		uint64_t m_hash;
+
+		uint64_t hash(coord x, coord y, Color c) const {
+			return coord_to_index(x, y) * static_cast<std::underlying_type_t<Color>>(c)-1;
+		}
 
 		RobotData& robots() {
 			return m_robotStack[0];

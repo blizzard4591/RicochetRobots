@@ -1,26 +1,10 @@
 #include "Game.h"
 
+#include "Random.h"
+
 #include <cassert>
-#include <iterator>
-#include <random>
 
 namespace ricochet {
-
-	namespace detail {
-		static auto& random_generator() {
-			static std::random_device rd;
-			static std::mt19937 gen(rd());
-
-			return gen;
-		}
-
-		template<typename Iter>
-		Iter select_randomly(Iter start, Iter end) {
-			std::uniform_int_distribution<typename std::iterator_traits<Iter>::difference_type> dis(0, std::distance(start, end) - 1);
-			std::advance(start, dis(random_generator()));
-			return start;
-		}
-	}
 
 	Game::Game(Map map, bool useSilver) :
 			m_map(std::move(map)), m_remainingGoals(m_map.getGoals()),
@@ -36,8 +20,8 @@ namespace ricochet {
 			while (true) {
 				Pos pos;
 
-				pos.x = disX(detail::random_generator());
-				pos.y = disY(detail::random_generator());
+				pos.x = disX(Random::random_generator());
+				pos.y = disY(Random::random_generator());
 
 				auto const& tile = m_map.getTileType(pos);
 				if (tile == TileType::EMPTY || tile == TileType::GOAL) {
@@ -64,7 +48,7 @@ namespace ricochet {
 			// One goal remaining
 			return *m_currentGoal;
 		}
-		auto goal_iter = detail::select_randomly(m_remainingGoals.begin(), m_remainingGoals.end());
+		auto goal_iter = Random::select_randomly(m_remainingGoals.begin(), m_remainingGoals.end());
 		m_currentGoal = *goal_iter;
 		m_remainingGoals.erase(goal_iter);
 		return *m_currentGoal;
