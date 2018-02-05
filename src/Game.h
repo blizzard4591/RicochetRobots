@@ -13,7 +13,6 @@ namespace ricochet {
 		std::vector<Goal> m_remainingGoals;
 		std::optional<Goal> m_currentGoal;
 		bool m_useSilver;
-
 	public:
 		explicit Game(Map map, bool useSilver);
 
@@ -24,6 +23,18 @@ namespace ricochet {
 
 		Game& operator=(Game const&) = default;
 		Game& operator=(Game&&) = default;
+
+		bool useSilver() const {
+			return m_useSilver;
+		}
+
+		Color getLastColor() const {
+			if (m_useSilver) {
+				return Color::SILVER;
+			} else {
+				return Color::YELLOW;
+			}
+		}
 
 		bool done() const {
 			return m_remainingGoals.empty() && !m_currentGoal.has_value();

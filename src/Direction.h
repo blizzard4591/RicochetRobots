@@ -36,6 +36,8 @@ namespace ricochet {
 				return Direction::NORTH;
 			case Direction::WEST:
 				return Direction::EAST;
+			default:
+				throw std::runtime_error("Invalid Direction");
 		}
 	}
 
