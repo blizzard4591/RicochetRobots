@@ -90,25 +90,25 @@ namespace ricochet {
 		}
 
 		void push() {
-			m_robotStack.push_back(m_robotStack[0]);
+			m_stateStack.push_back(m_curState);
 		}
 
 		void pop() {
-			if (m_robotStack.size() > 1) {
-				robots() = m_robotStack.back();
-				m_robotStack.pop_back();
+			if (m_stateStack.size() > 1) {
+				m_curState = m_stateStack.back();
+				m_stateStack.pop_back();
 			}
 		}
 
 		void popAll() {
-			if (m_robotStack.size() > 1) {
-				robots() = *(m_robotStack.begin() + 1);
-				m_robotStack.erase(m_robotStack.begin() + 1, m_robotStack.end());
+			if (!m_stateStack.empty()) {
+				m_curState = m_stateStack.front();
+				m_stateStack.clear();
 			}
 		}
 
 		void apply() {
-			m_robotStack.erase(m_robotStack.begin() + 1, m_robotStack.end());
+			m_stateStack.clear();
 		}
 	private:
 		coord m_width;
@@ -123,20 +123,26 @@ namespace ricochet {
 		std::vector<Tile> m_tiles;
 
 		typedef std::array<Pos, static_cast<std::underlying_type_t<Color>>(Color::SILVER)> RobotData;
-		std::vector<RobotData> m_robotStack;
+
+		struct State {
+			RobotData robots;
+			uint64_t hash;
+		};
+
+		std::vector<State> m_stateStack;
+		State m_curState;
 
 		std::vector<uint64_t> m_hashTable;
-		uint64_t m_hash;
 
 		uint64_t hash(coord x, coord y, Color c) const {
 			return coord_to_index(x, y) * static_cast<std::underlying_type_t<Color>>(c)-1;
 		}
 
 		RobotData& robots() {
-			return m_robotStack[0];
+			return m_curState.robots;
 		}
 		RobotData const& robots() const {
-			return m_robotStack[0];
+			return m_curState.robots;
 		}
 
 		auto& getRobotPos(Color c) {

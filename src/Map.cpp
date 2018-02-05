@@ -40,8 +40,7 @@ namespace ricochet {
 
 		m_tiles.resize(size);
 
-		m_robotStack.reserve(5);
-		m_robotStack.resize(1);
+		m_stateStack.reserve(5);
 
 		initDist();
 
@@ -50,7 +49,7 @@ namespace ricochet {
 		for(unsigned i = 0; i < nrHash; i++) {
 			m_hashTable.push_back(Random::random_generator_64()());
 		}
-		m_hash = 0u;
+		m_curState.hash = 0u;
 	}
 
 	coord Map::getWidth() const {
@@ -235,7 +234,7 @@ namespace ricochet {
 			throw std::runtime_error("insertRobot: Not empty");
 		}
 
-		m_hash ^= hash(pos.x, pos.y, r.color);
+		m_curState.hash ^= hash(pos.x, pos.y, r.color);
 
 		getRobotPos(r.color) = pos;
 	}
@@ -321,11 +320,11 @@ namespace ricochet {
 	}
 
 	bool Map::moveRobot(Color const& robot, Direction& dir) {
-		Pos& pos = m_robotStack[0][static_cast<std::underlying_type_t<Color>>(robot)];
+		Pos& pos = robots()[static_cast<std::underlying_type_t<Color>>(robot)];
 		Pos orig = pos;
 
 		auto curHash = hash(pos.x, pos.y, robot);
-		m_hash ^= curHash;
+		m_curState.hash ^= curHash;
 
 		while (true) {
 			auto dWall = distToWall(pos, dir);
@@ -334,13 +333,13 @@ namespace ricochet {
 			if (dist == 0) {
 				// Invalid move
 				pos = orig;
-				m_hash ^= curHash;
+				m_curState.hash ^= curHash;
 				return false;
 			}
 			pos = movePos(pos, dir, dist);
 			if (pos == orig) {
 				// Cycle
-				m_hash ^= curHash;
+				m_curState.hash ^= curHash;
 				return false;
 			}
 			auto& curTile = getTile(pos);
@@ -383,7 +382,7 @@ namespace ricochet {
 				}
 			} else {
 				// Hit wall or obstacle, done
-				m_hash ^= hash(pos.x, pos.y, robot);
+				m_curState.hash ^= hash(pos.x, pos.y, robot);
 				return true;
 			}
 		}
