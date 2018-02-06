@@ -1,0 +1,34 @@
+{
+   "goals": [
+      {
+         "color": 4,
+         "type": 1,
+         "x": 0,
+         "y": 0
+      },
+      {
+         "color": 2,
+         "type": 2,
+         "x": 0,
+         "y": 3
+      },
+      {
+         "color": 3,
+         "type": 3,
+         "x": 3,
+         "y": 0
+      },
+      {
+         "color": 1,
+         "type": 4,
+         "x": 3,
+         "y": 3
+      }
+   ],
+   "height": 4,
+   "obstacles": [
+   ],
+   "walls": [
+   ],
+   "width": 4
+}
