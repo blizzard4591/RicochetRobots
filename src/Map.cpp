@@ -321,72 +321,80 @@ namespace ricochet {
 
 	bool Map::moveRobot(Color const& robot, Direction& dir) {
 		Pos& pos = robots()[static_cast<std::underlying_type_t<Color>>(robot)];
-		Pos orig = pos;
 
-		while (true) {
-			auto dWall = distToWall(pos, dir);
-			auto dObs = dWall ? distToRobot(pos, dir, dWall) : dWall;
-			auto dist = std::min(dObs, dWall);
+		auto dWall = distToWall(pos, dir);
+		if (dWall == 0) {
+			return false;
+		}
+		auto dObs = distToRobot(pos, dir, dWall);
+		if (dObs == 0) {
+			return false;
+		}
+
+		Pos orig = pos;
+		auto dist = std::min(dObs, dWall);
+		pos = movePos(pos, dir, dist);
+
+		// Cycle detection
+		Pos first = pos;
+
+		while(getTile(pos).getType() == TileType::BARRIER) {
+			// If barrier, change direction if required,
+			// update position
+			auto& barrier = getTile(pos).barrier();
+			if (barrier.color != robot) {
+				bool fwd = barrier.alignment == BarrierType::FWD;
+				switch (dir) {
+					case Direction::NORTH:
+						if (fwd) {
+							dir = Direction::EAST;
+						} else {
+							dir = Direction::WEST;
+						}
+						break;
+					case Direction::EAST:
+						if (fwd) {
+							dir = Direction::NORTH;
+						} else {
+							dir = Direction::SOUTH;
+						}
+						break;
+					case Direction::SOUTH:
+						if (fwd) {
+							dir = Direction::WEST;
+						} else {
+							dir = Direction::EAST;
+						}
+						break;
+					case Direction::WEST:
+						if (fwd) {
+							dir = Direction::SOUTH;
+						} else {
+							dir = Direction::NORTH;
+						}
+						break;
+				}
+			}
+
+			dWall = distToWall(pos, dir);
+			dObs = dWall ? distToRobot(pos, dir, dWall) : dWall;
+			dist = std::min(dObs, dWall);
 			if (dist == 0) {
 				// Invalid move
 				pos = orig;
 				return false;
 			}
-			pos = movePos(pos, dir, dist);
-
-			// Commented out, this is not possible when not starting on a barrier
-			/*if (pos == orig) {
+			if (pos == first) {
 				// Cycle
-			    // hash identical again
+				pos = orig;
 				return false;
-			}*/
-			auto& curTile = getTile(pos);
-			if (curTile.getType() == TileType::BARRIER) {
-				// If barrier, change direction if required,
-				// update position
-				auto& barrier = curTile.barrier();
-				if (barrier.color != robot) {
-					bool fwd = barrier.alignment == BarrierType::FWD;
-					switch (dir) {
-						case Direction::NORTH:
-							if (fwd) {
-								dir = Direction::EAST;
-							} else {
-								dir = Direction::WEST;
-							}
-							break;
-						case Direction::EAST:
-							if (fwd) {
-								dir = Direction::NORTH;
-							} else {
-								dir = Direction::SOUTH;
-							}
-							break;
-						case Direction::SOUTH:
-							if (fwd) {
-								dir = Direction::WEST;
-							} else {
-								dir = Direction::EAST;
-							}
-							break;
-						case Direction::WEST:
-							if (fwd) {
-								dir = Direction::SOUTH;
-							} else {
-								dir = Direction::NORTH;
-							}
-							break;
-					}
-				}
-			} else {
-				// Hit wall or obstacle, done
-				m_curState.hash ^= hash(orig.x, orig.y, robot);
-				m_curState.hash ^= hash(pos.x, pos.y, robot);
-				return true;
 			}
 		}
-		// Unreachable
-		assert(false);
+
+		// Hit wall or obstacle, done
+		m_curState.hash ^= hash(orig.x, orig.y, robot);
+		m_curState.hash ^= hash(pos.x, pos.y, robot);
+		return true;
 	}
 
 	Pos Map::movePos(Pos const& pos, Direction dir, coord dist) const {
