@@ -323,9 +323,6 @@ namespace ricochet {
 		Pos& pos = robots()[static_cast<std::underlying_type_t<Color>>(robot)];
 		Pos orig = pos;
 
-		auto curHash = hash(pos.x, pos.y, robot);
-		m_curState.hash ^= curHash;
-
 		while (true) {
 			auto dWall = distToWall(pos, dir);
 			auto dObs = dWall ? distToRobot(pos, dir, dWall) : dWall;
@@ -333,15 +330,16 @@ namespace ricochet {
 			if (dist == 0) {
 				// Invalid move
 				pos = orig;
-				m_curState.hash ^= curHash;
 				return false;
 			}
 			pos = movePos(pos, dir, dist);
-			if (pos == orig) {
+
+			// Commented out, this is not possible when not starting on a barrier
+			/*if (pos == orig) {
 				// Cycle
-				m_curState.hash ^= curHash;
+			    // hash identical again
 				return false;
-			}
+			}*/
 			auto& curTile = getTile(pos);
 			if (curTile.getType() == TileType::BARRIER) {
 				// If barrier, change direction if required,
@@ -382,6 +380,7 @@ namespace ricochet {
 				}
 			} else {
 				// Hit wall or obstacle, done
+				m_curState.hash ^= hash(orig.x, orig.y, robot);
 				m_curState.hash ^= hash(pos.x, pos.y, robot);
 				return true;
 			}
