@@ -104,8 +104,15 @@ int program(std::vector<std::string>& args) {
 	ricochet::Game game(test, true);
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 2: \n" << game.getMap().toString());
 
-	auto ra = ricochet::ReachabilityAnalysis();
-	ra.dfs(game.getMap());
+
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Doing DFS...");
+	auto raDfs = ricochet::ReachabilityAnalysis();
+	raDfs.dfs(game.getMap());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Done with " << raDfs.getNumberOfExploredStates() << " visited states and a maximum depth of " << raDfs.getMaxEncounteredDepth() << ".");
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Doing BFS...");
+	auto raBfs = ricochet::ReachabilityAnalysisBfs();
+	raBfs.bfs(game.getMap());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Done with " << raBfs.getNumberOfExploredStates() << " visited states and a maximum depth of " << raBfs.getMaxEncounteredDepth() << ".");
 
 	auto& map = game.getMap();
 	map.insertRobot({ricochet::Color::BLUE}, ricochet::Pos{1, 0});
