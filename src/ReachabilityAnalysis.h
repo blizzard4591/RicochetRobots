@@ -27,8 +27,7 @@ namespace ricochet {
 	class ReachabilityAnalysisBfs {
 	public:
 		void bfs(ricochet::Map& map) {
-			Map::RobotData const initialRobotData = map.robotData();
-			Map::hash_t const initialMapHash = map.hash();
+			map.push();
 
 			moves.clear();
 			moves.reserve(10000000);
@@ -40,6 +39,7 @@ namespace ricochet {
 			
 			queue.push(moves.size());
 			moves.push_back({ Color::BLUE, Direction::NORTH, map.robotData(), map.hash(), 0u });
+			knownMaps.insert(map.hash());
 
 			maxDepth = 0u;
 			while (!queue.empty()) {
@@ -62,6 +62,9 @@ namespace ricochet {
 					}
 				}
 			}
+
+			std::cout << knownMaps.size() << " trans: " << numTrans << std::endl;
+			map.pop();
 		}
 
 		std::size_t getNumberOfExploredStates() const {
@@ -83,6 +86,8 @@ namespace ricochet {
 	class ReachabilityAnalysis {
 	public:
 		void dfs(ricochet::Map& map) {
+			map.push();
+
 			states.clear();
 			auto res = states.insert(std::make_pair(map.hash(), reachable()));
 			numTrans = 0u;
@@ -90,6 +95,8 @@ namespace ricochet {
 			maxDepth = 0u;
 			dfs(map, res.first);
 			std::cout << states.size() << " trans: " << numTrans << std::endl;
+
+			map.pop();
 		}
 
 		void dfs(ricochet::Map& map, std::map<std::uint64_t, reachable>::iterator const& it) {
@@ -99,10 +106,9 @@ namespace ricochet {
 			size_t moveI = 0;
 			for(ricochet::Color c: ricochet::RobotColors) {
 				for(ricochet::Direction dir: ricochet::AllDirections) {
-					if (it->second.next[moveI] == 0 && map.moveRobot(c, dir)) {
+					if (map.moveRobot(c, dir)) {
 						numTrans++;
 						auto res = states.insert(std::make_pair(map.hash(), reachable()));
-						res.first->second.next[moveI ^ 2] = it->first;
 						it->second.next[moveI] = map.hash();
 						if (res.second) {
 							// new item, recurse
