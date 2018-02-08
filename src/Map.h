@@ -3,6 +3,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <functional>
 
 #include "BarrierType.h"
 #include "Color.h"
@@ -56,7 +57,18 @@ namespace ricochet {
 	class Map {
 	public:
 		typedef std::array<Pos, static_cast<std::underlying_type_t<Color>>(Color::SILVER)+1> RobotData;
-		typedef uint64_t hash_t;
+		typedef std::size_t hash_t;
+
+		struct State {
+			RobotData robots;
+			hash_t hash;
+			bool operator==(State const& otherState) const noexcept {
+				return robots == otherState.robots;
+			}
+			bool operator!=(State const& otherState) const noexcept {
+				return robots != otherState.robots;
+			}
+		};
 
 		Map(coord width, coord height);
 		~Map() = default;
@@ -89,7 +101,7 @@ namespace ricochet {
 		std::string toString() const;
 
 		Pos const& getRobotPos(Color c) const {
-			return robotData()[static_cast<std::underlying_type_t<Color>>(c)];
+			return state().robots[static_cast<std::underlying_type_t<Color>>(c)];
 		}
 
 		std::vector<Goal> getGoals() const;
@@ -127,17 +139,12 @@ namespace ricochet {
 			m_stateStack.clear();
 		}
 
-		void loadState(RobotData const& robots, hash_t hash) {
-			m_curState.robots = robots;
-			m_curState.hash = hash;
+		void loadState(State const& state) {
+			m_curState = state;
 		}
 
-		RobotData const& robotData() const {
-			return m_curState.robots;
-		}
-
-		hash_t hash() const {
-			return m_curState.hash;
+		State const& state() const {
+			return m_curState;
 		}
 	private:
 		coord m_width;
@@ -150,11 +157,6 @@ namespace ricochet {
 		std::vector<coord> m_westDist;
 
 		std::vector<Tile> m_tiles;
-
-		struct State {
-			RobotData robots;
-			hash_t hash;
-		};
 
 		std::vector<State> m_stateStack;
 		State m_curState;
@@ -191,5 +193,16 @@ namespace ricochet {
 
 		void insertSemiWall(Pos const& pos, Direction dir, bool barrier);
 	};
-
 }
+
+// custom specialization of std::hash can be injected in namespace std
+namespace std {
+	template<> struct hash<ricochet::Map::State> {
+		typedef ricochet::Map::State argument_type;
+		typedef std::size_t result_type;
+		result_type operator()(argument_type const& s) const noexcept {
+			return s.hash;
+		}
+	};
+}
+

@@ -106,23 +106,22 @@ int program(std::vector<std::string>& args) {
 
 
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Doing DFS...");
-	auto raDfs = ricochet::ReachabilityAnalysis();
-	raDfs.dfs(game.getMap());
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Done with " << raDfs.getNumberOfExploredStates() << " visited states and a maximum depth of " << raDfs.getMaxEncounteredDepth() << ".");
+	auto ra = ricochet::ReachabilityAnalysis();
+	ra.dfs(game.getMap());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Done with " << ra.getNumberOfExploredStates() << " visited states and a maximum depth of " << ra.getMaxEncounteredDepth() << ".");
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Doing BFS...");
-	auto raBfs = ricochet::ReachabilityAnalysisBfs();
-	raBfs.bfs(game.getMap());
-	L3PP_LOG_INFO(l3pp::getRootLogger(), "Done with " << raBfs.getNumberOfExploredStates() << " visited states and a maximum depth of " << raBfs.getMaxEncounteredDepth() << ".");
+	ra.bfs(game.getMap());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), "Done with " << ra.getNumberOfExploredStates() << " visited states and a maximum depth of " << ra.getMaxEncounteredDepth() << ".");
 
 	auto& map = game.getMap();
 	map.insertRobot({ricochet::Color::BLUE}, ricochet::Pos{1, 0});
-	L3PP_LOG_INFO(l3pp::getRootLogger(), map.hash());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), map.state().hash);
 	auto dir = ricochet::Direction::SOUTH;
 	map.moveRobot(ricochet::Color::BLUE, dir);
-	L3PP_LOG_INFO(l3pp::getRootLogger(), map.hash());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), map.state().hash);
 	dir = ricochet::Direction::NORTH;
 	map.moveRobot(ricochet::Color::BLUE, dir);
-	L3PP_LOG_INFO(l3pp::getRootLogger(), map.hash());
+	L3PP_LOG_INFO(l3pp::getRootLogger(), map.state().hash);
 
 	L3PP_LOG_INFO(l3pp::getRootLogger(), "Map data 3: \n" << game.getMap().toString());
 

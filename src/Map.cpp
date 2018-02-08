@@ -31,7 +31,7 @@ namespace ricochet {
 		return std::get<GoalTile>(m_data);
 	}
 
-	Map::Map(coord width, coord height) : m_width(width), m_height(height) {
+	Map::Map(coord width, coord height) : m_width(width), m_height(height), m_curState{ {{{0u, 0u}}}, 0u } {
 		auto size = width * height;
 		m_northDist.resize(size);
 		m_southDist.resize(size);
@@ -77,7 +77,7 @@ namespace ricochet {
 
 				std::optional<Color> curRobot;
 				size_t i = 0;
-				for (auto r_it = robotData().begin(); r_it != robotData().end(); r_it++, i++) {
+				for (auto r_it = state().robots.begin(); r_it != state().robots.end(); r_it++, i++) {
 					if (*r_it == pos) {
 						curRobot = static_cast<Color>(i+1);
 					}
@@ -136,15 +136,18 @@ namespace ricochet {
 					{
 						GoalTile const& g = tile.goal();
 						if (curRobot) {
-							lines.at(lineIndex + 1u).append(u8"ⓡ");
+							//lines.at(lineIndex + 1u).append(u8"ⓡ");
+							lines.at(lineIndex + 1u).append(u8"\u24C7");
 						} else {
-							lines.at(lineIndex + 1u).append(u8"◯");
+							//lines.at(lineIndex + 1u).append(u8"◯");
+							lines.at(lineIndex + 1u).append(u8"\u25EF");
 						}
 						break;
 					}
 					case TileType::INACCESSIBLE:
 					{
-						lines.at(lineIndex + 1u).append(u8"░");
+						//lines.at(lineIndex + 1u).append(u8"░");
+						lines.at(lineIndex + 1u).append(u8"\u2591");
 						break;
 					}
 					default:
@@ -413,7 +416,7 @@ namespace ricochet {
 	}
 
 	coord Map::distToRobot(Pos const &pos, Direction dir, coord maxDist) const {
-		for (auto const& rpos: robotData()) {
+		for (auto const& rpos: state().robots) {
 			switch (dir) {
 				case Direction::NORTH:
 					if (pos.x == rpos.x) {
